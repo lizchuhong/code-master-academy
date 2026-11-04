@@ -1,9 +1,9 @@
 {
-  "id": "./",
+  "id": "/code-master-academy/app-code-master-v2",
   "name": "Code Master Academy",
   "short_name": "Code Master",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/code-master-academy/",
+  "scope": "/code-master-academy/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#215b70",
