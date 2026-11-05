@@ -85,7 +85,9 @@ function trustedSource(item,s){
 function cleanSection(s){return s.title.replace(/^\d+\.\s*/, '').replace(/^([A-E])\.\s*/, '')}
 function related(item,groups){
  const concept=groups[1],examples=groups[2];
- const picks=[...concept.slice(0,3),...examples.slice(0,2)];
+ const taught=concept.filter(i=>/Học trước khi làm/i.test(item.sections[i].title));
+ const manual=concept.filter(i=>/giáo trình Banking gốc|Grammatica|Concept explanation|Beginner Deep Dive|từ số 0/i.test(item.sections[i].title));
+ const picks=[...taught,...manual.slice(0,2),...examples.slice(0,2),...concept.slice(0,2)];
  return [...new Set(picks)].filter(i=>i!==section).slice(0,5);
 }
 function lessonView(){
@@ -123,6 +125,14 @@ function lessonView(){
   related(item,groups).forEach(i=>{const b=document.createElement('button');b.textContent=cleanSection(item.sections[i]);b.className='secondary';b.addEventListener('click',()=>jump(i));row.append(b)});
   if(!row.children.length){const p=document.createElement('p');p.textContent='Bài chưa có phần lý thuyết hoặc ví dụ riêng. Đừng coi bài này là đủ kiến thức để tự làm; kiểm tra học phần trước hoặc tài liệu tham chiếu.';prep.append(p)}
   else prep.append(row);
+
+  const key=(item.weekTitle||'')+' '+item.title;
+  const target=/sql|postgres|database|join/i.test(key)?'sql':/python|function|loop|variable/i.test(key)?'python':'api';
+  const a=document.createElement('a');
+  a.className='guide-lab-link';
+  a.href='./lab.html#'+target;
+  a.textContent='🧪 Mở phòng thực hành '+({sql:'SQL',python:'Python',api:'API/Banking'}[target])+' (dữ liệu mẫu)';
+  prep.append(a);
   hero.append(prep);
  }
  const nav=card.querySelector('.lesson-nav,.navdays');
