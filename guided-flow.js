@@ -19,6 +19,12 @@ function kind(title){
 function order(item){
  const groups=[[],[],[],[],[]];
  item.sections.forEach((s,i)=>{groups[kind(s.title)].push(i)});
+ if(C&&/^QA\d+D\d+$/.test(item.id)){
+   // The IT zero-basics explanation is the start of the QA learning path.
+   // Keep Banking terminology and source text next, before exercises.
+   const rank=t=>/^Hướng dẫn từ số 0/i.test(t)?0:/^A\. Giải thích từ số 0/i.test(t)?1:/^B\. Nội dung giáo trình Banking/i.test(t)?2:3;
+   groups[1].sort((a,b)=>rank(item.sections[a].title)-rank(item.sections[b].title));
+ }
  return groups;
 }
 const jump=n=>{section=n;C?renderDay():renderLesson()};
@@ -114,6 +120,12 @@ function lessonView(){
   b.disabled=!groups[i].length;b.addEventListener('click',()=>jump(groups[i][0]));tabs.append(b);
  });
  hero.append(tabs);
+ if(C&&/^QA\d+D\d+$/.test(item.id)){
+   const info=document.createElement('p');
+   info.className='guide-qa-explainer';
+   info.textContent='Đây là '+item.id+' (một bài học). Bước 2 “Học kiến thức” có cả IT từ số 0 và nghiệp vụ Banking. Chọn mục ở ô bên dưới; đổi mục không đổi bài.';
+   hero.append(info);
+ }
  // Put a simple section dropdown and explain where the learning material lives.
  const top=document.createElement('div');top.className='guide-location';
  const select=document.createElement('select');select.setAttribute('aria-label','Chọn mục trong bước đang học');
@@ -181,8 +193,22 @@ function lessonView(){
  const footer=document.createElement('div');footer.className='guide-footer';
  const left=document.createElement('button');left.className='secondary';left.textContent='← Mục trước';left.disabled=pos<=0;left.addEventListener('click',()=>jump(allOrder[pos-1]));
  const count=document.createElement('div');count.className='guide-count';count.textContent='Mục '+(pos+1)+' / '+allOrder.length;
- const next=document.createElement('button');next.textContent=pos===allOrder.length-1?'Hoàn thành, sang bài tiếp →':'Mục tiếp →';next.addEventListener('click',()=>pos===allOrder.length-1?open(Math.min(items.length-1,current+1)):jump(allOrder[pos+1]));
+ const last=pos===allOrder.length-1;
+ const next=document.createElement('button');
+ next.textContent=last?'Đã đến cuối bài':'Mục tiếp →';
+ next.disabled=last;
+ if(!last)next.addEventListener('click',()=>jump(allOrder[pos+1]));
  footer.append(left,count,next);document.body.append(footer);
+ if(last&&current<items.length-1){
+   const nextItem=items[current+1];
+   const panel=document.createElement('section');panel.className='guide-end-lesson';
+   const summary=document.createElement('p');
+   summary.textContent='Bạn đã xem hết các mục của '+id(item)+'. Không có thao tác nào tự chuyển sang bài sau hoặc tự đánh dấu hoàn thành.';
+   const goNext=document.createElement('button');
+   goNext.textContent='Mở bài tiếp theo: '+id(nextItem)+' — '+nextItem.title;
+   goNext.addEventListener('click',()=>open(current+1));
+   panel.append(summary,goNext);root.append(panel);
+ }
  document.querySelectorAll('body > .guide-footer').forEach((f,i,a)=>{if(i<a.length-1)f.remove()});
  const standalone=root.querySelector('#work')?.closest('.card');
  if(standalone&&!standalone.closest('details')){const details=document.createElement('details');details.className='guide-legacy';details.innerHTML='<summary>Ghi chú hoặc chạy thử HTML/JS (tùy chọn)</summary>';standalone.parentElement.insertBefore(details,standalone);details.append(standalone)}
