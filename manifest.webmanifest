@@ -5,8 +5,8 @@
   "start_url": "/code-master-academy/",
   "scope": "/code-master-academy/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#215b70",
+  "background_color": "#071625",
+  "theme_color": "#071625",
   "icons": [
     {
       "src": "./icon.svg",
