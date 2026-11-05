@@ -160,4 +160,6 @@ el('chain-verify').addEventListener('click',async()=>{if(!chain.length){show('ch
  }
  show('chain-out',(valid?'✓ Liên kết hash hợp lệ':'✗ Hash mismatch: dữ liệu đã thay đổi hoặc chain mất liên kết')+'\n'+JSON.stringify(chain.map(x=>({index:x.index,data:x.data,hash:x.hash.slice(0,18)})),null,2));
 });
+const preferred=location.hash.slice(1);
+if(['api','sql','python','business'].includes(preferred))document.querySelector('[data-pane="'+preferred+'"]')?.click();
 })();
