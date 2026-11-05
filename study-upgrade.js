@@ -82,6 +82,20 @@
         textNodes[k].insertAdjacentElement('afterend',group);
       });
     }
+    // Preserve access to answers from the earlier generic three-question interface.
+    if(total>0){
+      const prefix='extra:'+getId()+':s'+section+':';
+      const oldKeys=Object.keys(state.answers||{}).filter(k=>k.startsWith(prefix)&&state.answers[k]?.text);
+      if(oldKeys.length){
+        const archive=document.createElement('details');
+        archive.className='optional-notes';
+        archive.innerHTML='<summary>🗂 Bài làm cũ đã lưu trước khi chia câu hỏi</summary><p class="muted">Giữ nguyên câu trả lời cũ để bạn xem và sao chép; các ô mới có mã lưu riêng.</p>';
+        oldKeys.sort().forEach((key,i)=>{
+          archive.append(buildAnswer(key,i+1,'Bài làm cũ '+(i+1)));
+        });
+        card.append(archive);
+      }
+    }
     if(!total&&isExercise){
       const prompts=codeApp?[
         'Giải thích khái niệm chính của '+item.title+' và đưa một ví dụ đầu vào/đầu ra.',
@@ -173,6 +187,17 @@
     root.insertAdjacentElement('afterbegin',banner);
   }
   if(codeApp){const originalOpenDay=openDay;openDay=function(id,sec){if(sec===undefined&&/^QA\d+D\d+$/.test(id)){const day=getItems().find(x=>x.id===id);if(day){let i=day.sections.findIndex(v=>v.title.startsWith('Hướng dẫn từ số 0'));if(i<0)i=day.sections.findIndex(v=>v.title==='A. Giải thích từ số 0 (Banking QA)');sec=Math.max(0,i)}}return originalOpenDay(id,sec===undefined?0:sec)}}
+
+  // Remove reading-only spacing when returning to non-lesson views.
+  const oldWeekView=weekView;
+  weekView=function(n){document.body.classList.remove('reading-mode');return oldWeekView(n)};
+  const oldOverview=overview;
+  overview=function(){document.body.classList.remove('reading-mode');return oldOverview()};
+  const oldNotes=notes;
+  notes=function(){document.body.classList.remove('reading-mode');return oldNotes()};
+  const oldProgressView=progressView;
+  progressView=function(){document.body.classList.remove('reading-mode');return oldProgressView()};
+
   const originalHome=home;
   home=function(){originalHome();resumeHome()};
   if(codeApp){
