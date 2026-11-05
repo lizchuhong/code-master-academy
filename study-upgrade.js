@@ -73,10 +73,12 @@
     const nav=card.querySelector('.navdays,.lesson-nav');
     if(nav)nav.insertAdjacentElement('afterend',h);
   }
+  function displayOrder(item){const list=item.sections.map((_,i)=>i);if(!codeApp||!/^QA\\d+D\\d+$/.test(item.id))return list;const b=list.find(i=>item.sections[i].title==='A. Giải thích từ số 0 (Banking QA)');const z=list.find(i=>item.sections[i].title.startsWith('Hướng dẫn từ số 0'));const p=[];if(z!==undefined)p.push(z);if(b!==undefined)for(let k=b;k<Math.min(b+5,list.length);k++)p.push(k);return [...p,...list.filter(i=>!p.includes(i))]}
   function makeControls(item){
     const bar=document.createElement('div');bar.className='learning-toolbar';
     const count=getItems().length,secs=getSections().length;
-    const p=Math.round((section+1)/secs*100);
+    const order=displayOrder(item), position=Math.max(0,order.indexOf(section));
+    const p=Math.round((position+1)/secs*100);
     bar.innerHTML='<div class="learning-progress"><span>📖 '+html(getTitle())+'</span><span>Phần '+(section+1)+'/'+secs+'</span></div>'+
       '<div class="learning-meter"><div style="width:'+p+'%"></div></div>'+
       '<div class="learning-actions"><button type="button" data-act="prevlesson" class="secondary" aria-label="Bài trước">‹ Bài</button>'+
@@ -89,8 +91,8 @@
     select.addEventListener('change',()=>go(Number(select.value)));
     for(const [action,cb,disabled] of [
       ['prevlesson',()=>go(Math.max(0,current-1)),current===0],
-      ['prevsection',()=>goSection(section-1),section===0],
-      ['nextsection',()=>goSection(section+1),section===secs-1],
+      ['prevsection',()=>goSection(order[position-1]),position===0],
+      ['nextsection',()=>goSection(order[position+1]),position===secs-1],
       ['nextlesson',()=>go(Math.min(count-1,current+1)),current===count-1]
     ]){const btn=bar.querySelector('[data-act="'+action+'"]');btn.disabled=disabled;btn.addEventListener('click',cb)}
     return bar;
@@ -106,6 +108,8 @@
     save();
     const nav=card.querySelector('.lesson-nav,.navdays');
     nav.setAttribute('aria-label','Các phần của bài học');
+    const tabs=[...nav.querySelectorAll('button')];displayOrder(item).forEach(i=>{if(tabs[i])nav.append(tabs[i])});
+    const oldFooter=root.querySelector('#done')?.closest('.card')?.querySelector('.row');if(oldFooter)oldFooter.style.display='none';
     [...nav.querySelectorAll('button')].forEach(btn=>{btn.title=btn.textContent});
     const active=nav.querySelector('.active');if(active)active.scrollIntoView({inline:'center',block:'nearest'});
     addHighlights(card,getSections()[section]);
