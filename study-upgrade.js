@@ -169,9 +169,8 @@
     const active=nav.querySelector('.active');if(active)active.scrollIntoView({inline:'center',block:'nearest'});
     addHighlights(card,getSections()[section]);
     addQuestions(card,item,getSections()[section]);
-    const qaBtn=codeApp&&/^QA\d+D\d+$/.test(item.id)?document.createElement('button'):null;
-    if(qaBtn){qaBtn.textContent='📘 Mở nội dung Banking chi tiết';qaBtn.className='secondary banking-shortcut';qaBtn.addEventListener('click',()=>goSection(Math.max(0,item.sections.findIndex(s=>s.title==='A. Giải thích từ số 0 (Banking QA)'))));card.querySelector('h2')?.insertAdjacentElement('afterend',qaBtn)}
-    if(codeApp&&/^QA[12]D[1-5]$/.test(item.id)){const fromZero=item.sections.findIndex(v=>v.title.startsWith('Hướng dẫn từ số 0'));if(fromZero>=0){const btn=document.createElement('button');btn.className='secondary banking-shortcut';btn.textContent='🌱 Học IT từ con số 0';btn.addEventListener('click',()=>goSection(fromZero));card.querySelector('h2')?.insertAdjacentElement('afterend',btn)}}
+    // QA foundational IT and Banking sections are selected inside Guided Study > Học kiến thức.
+    // Do not insert extra shortcut buttons here: they confused users and could overlap navigation.
     const legacy=root.querySelector('#work')?.closest('.card');
     if(legacy){const disclosure=document.createElement('details');disclosure.className='optional-notes';disclosure.innerHTML='<summary>Ghi chú tự do / xem trước code (tùy chọn)</summary>';legacy.insertAdjacentElement('beforebegin',disclosure);disclosure.append(legacy);legacy.classList.add('legacy-notes')}
     root.append(makeControls(item));
