@@ -145,13 +145,24 @@ function lessonView(){
   if(!row.children.length){const p=document.createElement('p');p.textContent='Bài chưa có phần lý thuyết hoặc ví dụ riêng. Đừng coi bài này là đủ kiến thức để tự làm; kiểm tra học phần trước hoặc tài liệu tham chiếu.';prep.append(p)}
   else prep.append(row);
 
-  const key=(item.weekTitle||'')+' '+item.title;
-  const target=/sql|postgres|database|join/i.test(key)?'sql':/python|function|loop|variable/i.test(key)?'python':'api';
-  const a=document.createElement('a');
-  a.className='guide-lab-link';
-  a.href='./lab.html#'+target;
-  a.textContent='🧪 Mở phòng thực hành '+({sql:'SQL',python:'Python',api:'API/Banking'}[target])+' (dữ liệu mẫu)';
-  prep.append(a);
+  const title=String(item.title||'');
+  const context=String(item.weekTitle||'');
+  let lab=null;
+  if(/\b(sql|postgres|database|join|constraint|query)\b/i.test(title)||(item.id?.startsWith('W')&&/SQL|PostgreSQL|Database/i.test(context))){
+    lab={href:'./lab.html#sql',label:'SQL'};
+  }else if(/\b(python|pytest|function|loop|dictionary|exception)\b/i.test(title)||(item.id?.startsWith('W')&&/Python/i.test(context))){
+    lab={href:'./lab.html#python',label:'Python'};
+  }else if(/\b(api|http|rest|postman|newman|fastapi|endpoint|request|response)\b/i.test(title)||(item.id?.startsWith('W')&&/API Testing|HTTP and REST|FastAPI/i.test(context))){
+    lab={href:'./lab.html#api',label:'API giả lập'};
+  }else if(!/^QA/.test(item.id)&&/watchlist|stock dashboard|tourism platform|react|javascript|frontend/i.test(title+' '+context)){
+    lab={href:'./product-demo.html',label:'Demo hai sản phẩm'};
+  }
+  if(lab){
+    const a=document.createElement('a');
+    a.className='guide-lab-link';a.href=lab.href;
+    a.textContent='🧪 Mở '+lab.label+' để thực hành (chỉ dữ liệu mẫu)';
+    prep.append(a);
+  }
   hero.append(prep);
  }
  const nav=card.querySelector('.lesson-nav,.navdays');
@@ -160,6 +171,7 @@ function lessonView(){
   const summary=document.createElement('summary');summary.textContent='Mở mục lục chi tiết ('+item.sections.length+' mục)';
   nav.parentNode.insertBefore(details,nav);details.append(summary,nav);
   nav.classList.add('guide-toc-list');
+  nav.querySelectorAll('button').forEach(b=>{b.textContent=b.textContent.replace(/^\d+\.\s+(?=\d+\.)/,'')});
  }
  const source=card.querySelector('h2');if(source)source.classList.add('guide-old-heading');
  const otherAction=card.querySelector('.lp-inline-actions');if(otherAction)otherAction.remove();
