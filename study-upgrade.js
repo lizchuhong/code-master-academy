@@ -73,7 +73,7 @@
     const nav=card.querySelector('.navdays,.lesson-nav');
     if(nav)nav.insertAdjacentElement('afterend',h);
   }
-  function displayOrder(item){const list=item.sections.map((_,i)=>i);if(!codeApp||!/^QA\\d+D\\d+$/.test(item.id))return list;const b=list.find(i=>item.sections[i].title==='A. Giải thích từ số 0 (Banking QA)');const z=list.find(i=>item.sections[i].title.startsWith('Hướng dẫn từ số 0'));const p=[];if(z!==undefined)p.push(z);if(b!==undefined)for(let k=b;k<Math.min(b+5,list.length);k++)p.push(k);return [...p,...list.filter(i=>!p.includes(i))]}
+  function displayOrder(item){const list=item.sections.map((_,i)=>i);if(!codeApp||!/^QA\d+D\d+$/.test(item.id))return list;const b=list.find(i=>item.sections[i].title==='A. Giải thích từ số 0 (Banking QA)');const z=list.find(i=>item.sections[i].title.startsWith('Hướng dẫn từ số 0'));const p=[];if(z!==undefined)p.push(z);if(b!==undefined)for(let k=b;k<Math.min(b+5,list.length);k++)p.push(k);return [...p,...list.filter(i=>!p.includes(i))]}
   function makeControls(item){
     const bar=document.createElement('div');bar.className='learning-toolbar';
     const count=getItems().length,secs=getSections().length;
