@@ -112,12 +112,14 @@
     addQuestions(card,item,getSections()[section]);
     const qaBtn=codeApp&&/^QA\d+D\d+$/.test(item.id)?document.createElement('button'):null;
     if(qaBtn){qaBtn.textContent='📘 Mở nội dung Banking chi tiết';qaBtn.className='secondary banking-shortcut';qaBtn.addEventListener('click',()=>goSection(Math.max(0,item.sections.findIndex(s=>s.title==='A. Giải thích từ số 0 (Banking QA)'))));card.querySelector('h2')?.insertAdjacentElement('afterend',qaBtn)}
+    if(codeApp&&/^QA[12]D[1-5]$/.test(item.id)){const fromZero=item.sections.findIndex(v=>v.title.startsWith('Hướng dẫn từ số 0'));if(fromZero>=0){const btn=document.createElement('button');btn.className='secondary banking-shortcut';btn.textContent='🌱 Học IT từ con số 0';btn.addEventListener('click',()=>goSection(fromZero));card.querySelector('h2')?.insertAdjacentElement('afterend',btn)}}
     const legacy=root.querySelector('#work')?.closest('.card');
     if(legacy){const disclosure=document.createElement('details');disclosure.className='optional-notes';disclosure.innerHTML='<summary>Ghi chú tự do / xem trước code (tùy chọn)</summary>';legacy.insertAdjacentElement('beforebegin',disclosure);disclosure.append(legacy);legacy.classList.add('legacy-notes')}
     root.append(makeControls(item));
   }
   function resumeHome(){
     document.body.classList.remove('reading-mode');
+    if(codeApp){const intro=document.createElement('div');intro.className='resume-banner';intro.innerHTML='<div><strong>🌱 Bắt đầu QA khi chưa biết IT</strong><p>Từ test case và nghiệp vụ ngân hàng đến SQL, API và automation — học theo từng bước.</p></div><button type="button">Học từ số 0 →</button>';intro.querySelector('button').addEventListener('click',()=>{const i=getItems().findIndex(d=>d.id==='QA1D1');if(i>=0)openDay('QA1D1',getItems()[i].sections.findIndex(x=>x.title.startsWith('Hướng dẫn từ số 0')))});root.insertAdjacentElement('afterbegin',intro)}
     const r=state.reading;
     if(!r)return;
     const item=getItems()[r.index];if(!item)return;
