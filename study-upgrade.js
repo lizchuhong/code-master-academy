@@ -128,6 +128,7 @@
     banner.querySelector('button').addEventListener('click',()=>{if(codeApp)openDay(item.id,Math.min(r.section,item.sections.length-1));else openLesson(r.index,Math.min(r.section,item.sections.length-1))});
     root.insertAdjacentElement('afterbegin',banner);
   }
+  if(codeApp){const originalOpenDay=openDay;openDay=function(id,sec){if(sec===undefined&&/^QA\d+D\d+$/.test(id)){const day=getItems().find(x=>x.id===id);if(day){let i=day.sections.findIndex(v=>v.title.startsWith('Hướng dẫn từ số 0'));if(i<0)i=day.sections.findIndex(v=>v.title==='A. Giải thích từ số 0 (Banking QA)');sec=Math.max(0,i)}}return originalOpenDay(id,sec===undefined?0:sec)}}
   const originalHome=home;
   home=function(){originalHome();resumeHome()};
   if(codeApp){
