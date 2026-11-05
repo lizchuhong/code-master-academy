@@ -106,7 +106,7 @@ el('sql-run').addEventListener('click',async()=>{
  }catch(e){show('sql-out','SQL Error: '+e.message+'\nGợi ý: thử SELECT, JOIN hoặc kiểm tra cú pháp/constraint.')}
  finally{btn.disabled=false}
 });
-el('sql-reset').addEventListener('click',async()=>{try{await sqlInitialize();db.close();db=new sqlLib.Database();db.run(seedSQL);show('sql-out','Đã đặt lại database SQL với dữ liệu mẫu.')}catch(e){show('sql-out','Không reset được: '+e.message)}}});
+el('sql-reset').addEventListener('click',async()=>{try{await sqlInitialize();db.close();db=new sqlLib.Database();db.run(seedSQL);show('sql-out','Đã đặt lại database SQL với dữ liệu mẫu.')}catch(e){show('sql-out','Không reset được: '+e.message)}});
 // Python runs in a separate worker so even an accidental infinite loop can be stopped.
 let worker=null,pythonBusy=false,workerUrl=null;
 function freshWorker(){
