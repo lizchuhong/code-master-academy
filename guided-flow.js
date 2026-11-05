@@ -36,11 +36,13 @@
     if (item.studyFlow) return item.studyFlow;
     const groups = labels.map(() => []);
     item.sections.forEach((value, index) => groups[stageOf(value)]?.push(index));
-    if (!C) {
-      const prioritize = (stage, first) => {
-        const index = groups[stage].findIndex(i => first(item.sections[i]));
-        if (index > 0) groups[stage].unshift(...groups[stage].splice(index, 1));
-      };
+    const prioritize = (stage, first) => {
+      const index = groups[stage].findIndex(i => first(item.sections[i]));
+      if (index > 0) groups[stage].unshift(...groups[stage].splice(index, 1));
+    };
+    if (C) {
+      prioritize(3, value => /^Exercise$/i.test(cleanTitle(value)));
+    } else {
       prioritize(2, value => Boolean(value.sampleText));
       prioritize(3, value => sectionNumber(value) === 8);
     }

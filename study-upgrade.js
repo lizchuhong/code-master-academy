@@ -82,7 +82,9 @@
     if (window.GuidedStudy?.hasExercises(item, section)) {
       const sectionData = item.sections[section];
       const numberedOnly = !codeApp && /^16\. Economia/.test(sectionData.title);
-      const acceptsParagraph = !codeApp && /^9\. Esercizi/.test(sectionData.title);
+      const acceptsParagraph = codeApp
+        ? /^(?:\d+\. )?(?:(?:Debugging |Testing )?Exercise|Hybrid (?:practice|tasks)|Interview question)$/i.test(sectionData.title)
+        : /^9\. Esercizi/.test(sectionData.title);
       const nodes = new Map([...card.querySelectorAll(':scope > [data-block-index]')]
         .map(node => [Number(node.dataset.blockIndex), node]));
 
