@@ -123,7 +123,7 @@ function lessonView(){
  if(C&&/^QA\d+D\d+$/.test(item.id)){
    const info=document.createElement('p');
    info.className='guide-qa-explainer';
-   info.textContent='Đây là '+item.id+' (một bài học). Bước 2 “Học kiến thức” có cả IT từ số 0 và nghiệp vụ Banking. Chọn mục ở ô bên dưới; đổi mục không đổi bài.';
+   info.textContent='Bạn đang ở bài '+item.id+'. Bước 2 “Học kiến thức” có nghiệp vụ Banking'+(item.sections.some(x=>x.title.startsWith('Hướng dẫn từ số 0'))?' và IT nền tảng từ số 0':'')+'. Chọn mục ở ô bên dưới; chuyển mục vẫn giữ nguyên bài này.';
    hero.append(info);
  }
  // Put a simple section dropdown and explain where the learning material lives.
