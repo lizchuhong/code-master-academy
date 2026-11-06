@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini Banking Lab</title>
+  <link rel="stylesheet" href="./guided-flow.css?v=30">
+  <style>
+    *{box-sizing:border-box} main{max-width:660px;margin:auto;padding:18px 16px}
+    form{padding:16px;background:var(--paper);border:1px solid var(--line);border-radius:12px}
+    label{display:block;margin:9px 0 4px} input{width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit}
+    button{margin-top:10px;padding:9px 14px;cursor:pointer} [role=alert]{font-weight:650}
+  </style>
+</head>
+<body data-academy="code">
+  <main>
+    <a class="study-text-link" href="./qa-starter.html#playwright">← QA Automation từ số 0</a>
+    <h1>Mini Banking Lab</h1>
+    <p>Tài khoản mô phỏng <strong>qa-demo</strong>, mật khẩu <strong>test-only-01</strong>.</p>
+    <form id="login" novalidate>
+      <label for="username">Tên đăng nhập</label>
+      <input id="username" autocomplete="off">
+      <label for="password">Mật khẩu</label>
+      <input id="password" type="password" autocomplete="off">
+      <button type="submit">Đăng nhập</button>
+      <p id="login-error" role="alert" hidden></p>
+    </form>
+    <section id="account" hidden>
+      <h2 tabindex="-1">Số dư tài khoản</h2>
+      <p>Số dư mẫu 500.000 VND. Khoảng chuyển thử từ 10.000 đến 200.000 VND, tính cả hai đầu.</p>
+      <form id="transfer" novalidate>
+        <label for="amount">Số tiền chuyển (VND)</label>
+        <input id="amount" inputmode="numeric" autocomplete="off">
+        <button type="submit">Kiểm tra lệnh chuyển</button>
+        <p id="transfer-error" role="alert" hidden></p>
+        <p id="receipt" role="status" hidden></p>
+      </form>
+    </section>
+  </main>
+  <script>
+    const byId = id => document.getElementById(id);
+    byId('login').addEventListener('submit', event => {
+      event.preventDefault();
+      const accepted = byId('username').value === 'qa-demo' && byId('password').value === 'test-only-01';
+      byId('login-error').textContent = accepted ? '' : 'Thông tin đăng nhập không hợp lệ.';
+      byId('login-error').hidden = accepted;
+      if (!accepted) return;
+      byId('login').hidden = true;
+      byId('account').hidden = false;
+      byId('account').querySelector('h2').focus();
+    });
+    byId('transfer').addEventListener('submit', event => {
+      event.preventDefault();
+      const input = byId('amount').value.trim();
+      const amount = Number(input);
+      const accepted = /^\d+$/.test(input) && amount >= 10000 && amount <= 200000;
+      byId('transfer-error').textContent = accepted ? '' : 'Số tiền phải là số nguyên từ 10.000 đến 200.000 VND.';
+      byId('transfer-error').hidden = accepted;
+      byId('receipt').textContent = accepted ? 'Lệnh chuyển mẫu hợp lệ.' : '';
+      byId('receipt').hidden = !accepted;
+    });
+  </script>
+</body>
+</html>

@@ -322,9 +322,11 @@
       '</p><h2>' + esc(lessonTitle(item)) + '</h2>');
     const step = pagesFor(item).findIndex(indices => indices.includes(next.part));
     const position = next.resume && step >= 0 ? ' · ' + stages[step].label : '';
-    resume.append(element('p', 'study-resume-meta', 'Bài ' + (next.index + 1) + position),
-      lessonLink(next.resume ? 'Tiếp tục bài này →' : count === items.length ? 'Mở lại bài →' : 'Bắt đầu bài ' +
-        (next.index + 1) + ' →', next.index, next.part, 'study-primary'));
+    const actions = element('div', 'study-actions');
+    actions.append(lessonLink(next.resume ? 'Tiếp tục bài này →' : count === items.length ? 'Mở lại bài →' : 'Bắt đầu bài ' +
+      (next.index + 1) + ' →', next.index, next.part, 'study-primary'),
+      link('QA Automation từ số 0', './qa-starter.html', 'secondary'));
+    resume.append(element('p', 'study-resume-meta', 'Bài ' + (next.index + 1) + position), actions);
     hero.append(resume);
     root.append(hero, catalog(next.index));
   }
@@ -363,6 +365,9 @@
       if (item.id === 'QA3D1') {
         return link('Mở mô phỏng API · Hợp đồng riêng của lab ↗', './lab.html#api', 'study-lab-link secondary');
       }
+      if (item.id === 'QA5D4') {
+        return link('Mở Mini Banking Lab', './qa-practice.html', 'study-lab-link secondary');
+      }
       return;
     }
     const topic = item.title + ' ' + item.weekTitle;
@@ -375,6 +380,14 @@
     const match = labs.find(([pattern]) => pattern.test(topic));
     if (match) return link(match[2] + ' ↗', './' + match[1], 'study-lab-link secondary');
   }
+
+  const beginnerSteps = {
+    QA3D3: ['assertion', 'Tập đọc JSON và viết assertion từ số 0'],
+    QA5D3: ['postman', 'Chạy collection đầu tiên từ terminal'],
+    QA5D4: ['async', 'Luyện await trước khi chạy Playwright'],
+    QA5D5: ['page-object', 'Chuyển ca đăng nhập sang Page Object'],
+    QA6D1: ['ci', 'Tập commit và chạy CI từ số 0']
+  };
 
   const prerequisiteLinks = {
     QA5D3: [['W1D1', 'Terminal và môi trường chạy'], ['QA3D3', 'Assertion trong Postman']],
@@ -561,6 +574,7 @@
       if (C && item.studyFlow) {
         if (/^Hướng dẫn từ số 0/.test(value.title)) label = 'IT nền tảng';
         else if (/^[BD]\. /.test(value.title)) label = 'Giáo trình và thực hành Banking';
+        else if (value.qaElective) label = 'Luyện thêm theo chủ đề QA riêng';
         else label = 'QA tổng quát';
       }
       if (!groups.has(label)) groups.set(label, element('div', 'study-resource-list'));
@@ -700,6 +714,10 @@
 
     const article = element('article', 'study-article',
       '<h2 tabindex="-1">' + (stages[stage]?.title ?? 'Tài liệu bổ sung') + '</h2>');
+    const beginner = beginnerSteps[item.id];
+    if (beginner && (stage === 0 || stage === practiceStage)) {
+      article.append(link(beginner[1], './qa-starter.html#' + beginner[0], 'study-lab-link secondary'));
+    }
     if (stage === 0) {
       const prerequisites = prerequisitePanel(item);
       if (prerequisites) article.append(prerequisites);
@@ -770,6 +788,7 @@
     toolsMenu = disclosure('Công cụ', 'study-menu');
     const menu = element('div', 'study-menu-links');
     const options = C ? [
+      ['QA Automation từ số 0', './qa-starter.html'],
       ['Phòng thực hành', './lab.html'], ['Bài tập 2 dự án', './projects.html'],
       ['Demo 2 sản phẩm', './product-demo.html'], ['Tài liệu FDE', './fde.html']
     ] : [['Lịch ôn D1–D30', '#lich-on'], ['Sổ lỗi tiếng Ý', '#so-loi']];

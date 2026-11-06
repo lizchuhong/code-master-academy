@@ -200,13 +200,13 @@
     ], [
       ['Ví dụ · Kiểm một lệnh mới được tạo', snippet('pm.test("Created as agreed", () => {\n  pm.response.to.have.status(201);\n});\npm.test("Created order starts pending", () => {\n  pm.expect(pm.response.json()).to.have.property("status", "PENDING");\n});')]
     ], [
-      ['Lời giải script cho hợp đồng POST /v1/transfer', snippet('pm.test("HTTP status is 200", () => {\n  pm.response.to.have.status(200);\n});\npm.test("Business status is SUCCESS", () => {\n  pm.expect(pm.response.json()).to.have.property("status", "SUCCESS");\n});\npm.test("Transaction id is present", () => {\n  const body = pm.response.json();\n  pm.expect(body).to.have.property("transactionId");\n  pm.expect(body.transactionId).to.be.a("string");\n  pm.expect(body.transactionId.trim()).not.to.equal("");\n});')],
-      ['Tự thử script', 'Thay response giả bằng status PENDING hoặc transactionId null để thấy đúng assertion fail. Đề này giả định transactionId là chuỗi. Nếu hợp đồng khác, sửa kiểm tra kiểu dựa trên schema.']
+      ['Lời giải cho request đọc giao dịch mẫu', snippet('pm.test("HTTP status is 200", () => {\n  pm.response.to.have.status(200);\n});\npm.test("Business status is SUCCESS", () => {\n  pm.expect(pm.response.json()).to.have.property("status", "SUCCESS");\n});\npm.test("Transaction id is present", () => {\n  const body = pm.response.json();\n  pm.expect(body).to.have.property("transactionId");\n  pm.expect(body.transactionId).to.be.a("string");\n  pm.expect(body.transactionId.trim()).not.to.equal("");\n});')],
+      ['Tự thử script', 'Đổi expected SUCCESS thành PENDING để thấy đúng assertion fail. Nếu có phản hồi từ một API khác, chọn mã và kiểu dữ liệu dựa trên hợp đồng của API đó.']
     ], [
-        'API giả lập POST /v1/transfer quy định HTTP 200, status SUCCESS và transactionId là chuỗi có nội dung. Viết ba kiểm tra Post-response.',
+        'Import collection v2.1 ở lộ trình QA Automation từ số 0. Dùng GET “Read sample transfer” đọc phản hồi JSON tĩnh. Viết lại ba phép kiểm trong Scripts → Post-response rồi bấm Send.',
         'Kiểm HTTP status bằng 200.',
         'Kiểm trường status bằng SUCCESS.',
-        'Kiểm transactionId là chuỗi có nội dung. Cho một payload lỗi để chứng minh assertion phát hiện sai khác.'
+        'Kiểm transactionId là chuỗi có nội dung. Đổi một expected để test fail, ghi tên phép kiểm và actual, sau đó khôi phục.'
     ], ['postman']),
     QA3D4: lesson('§1.1.2, §2.2.1, §5.5 · điều tra failure · thực hành SQL/API bổ sung', [
       ['HTTP 500 là dấu hiệu, chưa phải nguyên nhân', 'Mã 500 báo máy chủ gặp tình trạng ngoài dự kiến khi xử lý request. Ghi thời gian, môi trường, request ID, tham chiếu lệnh, payload đã che dữ liệu và response. Dùng hợp đồng để so request, sau đó đối chiếu log và DB với người phụ trách. Request lỗi có thể kích hoạt một defect ở server, và POST có thể đã tạo side effect trước khi phản hồi lỗi.'],
@@ -316,24 +316,24 @@
       ['Ví dụ · CLI và JUnit', snippet('npx newman run collections/smoke.json -e environments/lab.json -r cli,junit --reporter-junit-export reports/smoke.xml')]
     ], [
       ['CLI và HTML cho đề bài', [
-        'Sau khi newman và newman-reporter-htmlextra đã có trong dev dependencies của dự án, chạy trong thư mục dự án và tạo thư mục reports.',
-        snippet('npx newman run collections/payments.json -e environments/lab.json -r cli,htmlextra --reporter-htmlextra-export reports/payments.html'),
+        'Lưu collection từ nhánh số 0 vào thư mục qa-tu-0. Trong Postman, tạo environment với biến transferUrl lấy từ collection rồi xuất thành qa-lab.postman_environment.json. Đặt hai tệp JSON cùng thư mục với package.json.',
+        snippet('npm.cmd install -D newman newman-reporter-htmlextra\nmkdir reports\nnpx.cmd newman run qa-starter.postman_collection.json -e qa-lab.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export reports/smoke.html'),
         'Thử đổi một expected để thấy CLI fail, process trả lỗi và report giúp tìm đúng request. Dùng giá trị thử, giữ secret trong môi trường chạy.'
       ]]
-    ], undefined, ['newman']),
+    ], 'Chạy collection mẫu bằng CLI trước. Thêm environment và báo cáo HTML theo đề, chạy lại với một expected sai, rồi lưu lệnh, tên phép kiểm lỗi và báo cáo.', ['newman']),
     QA5D4: lesson('§6.2, §2.2.1 · lợi ích, rủi ro và vị trí của UI automation', [
       ['Một test UI có thể lặp lại', 'Mỗi test chuẩn bị tài khoản giả lập và trạng thái ban đầu rõ. Dùng locator theo vai trò, nhãn người dùng thấy hoặc test ID đã thống nhất. Xác định assertion đầu ra như heading trang tài khoản, thêm kiểm API riêng nếu cần xác minh dữ liệu. Browser context riêng giảm rò trạng thái giữa test.'],
       ['Chờ trạng thái, tránh chờ số giây', 'Playwright tự chờ điều kiện thao tác của locator, còn web-first assertion sẽ thử lại đến khi đạt hoặc hết thời gian chờ. Dùng expect(locator).toBeVisible() cho nội dung xuất hiện sau request. Lệnh sleep cố định có thể vừa làm chậm bộ test vừa fail khi hệ thống lâu hơn dự tính.'],
       ['Quyết định nên tự động hóa ở đâu', 'UI hữu ích cho vài luồng kinh doanh xuyên màn hình, còn rule tính toán, quyền và validation thường kiểm nhanh hơn ở unit hoặc API. Chọn case có giá trị chạy lặp và dữ liệu kiểm soát được. Khi fail, đọc trace và request thay vì tăng timeout theo phản xạ.']
     ], [
-      ['Ví dụ · Một assert chờ nội dung', snippet("await page.goto('/accounts');\nawait expect(page.getByRole('heading', { name: 'Tài khoản' })).toBeVisible();")]
+      ['Ví dụ · Kiểm màn số dư trong Mini Banking Lab', snippet("await expect(page.getByRole('heading', { name: 'Số dư tài khoản' })).toBeVisible();")]
     ], [
-      ['Lời giải Playwright Test TypeScript', [
-        'Ví dụ giả định baseURL trỏ vào lab, các nhãn truy cập đã có và người dùng mẫu được seed.',
-        snippet("import { test, expect } from '@playwright/test';\n\ntest('active user opens account dashboard', async ({ page }) => {\n  await page.goto('/login');\n  await page.getByLabel('Tên đăng nhập').fill('demo-user');\n  await page.getByLabel('Mật khẩu').fill('TEST-ONLY');\n  await page.getByRole('button', { name: 'Đăng nhập' }).click();\n  await expect(page.getByRole('heading', { name: 'Số dư tài khoản' })).toBeVisible();\n});"),
-        'Thêm test sai mật khẩu với bằng chứng không tạo phiên. Khi chạy CI, lấy thông tin test từ cấu hình được phép.'
+      ['Lời giải Playwright Test JavaScript', [
+        'Tải qa-playwright.spec.js cùng qa-practice.html ở bước 7. beforeEach mở lab từ tệp trên máy. Mini Banking Lab kiểm giao diện với dữ liệu giả và không tạo phiên phía máy chủ.',
+        snippet("test('đăng nhập đúng', async ({ page }) => {\n  await page.getByLabel('Tên đăng nhập').fill('qa-demo');\n  await page.getByLabel('Mật khẩu').fill('test-only-01');\n  await page.getByRole('button', { name: 'Đăng nhập' }).click();\n  await expect(page.getByRole('heading', { name: 'Số dư tài khoản' })).toBeVisible();\n});"),
+        'Ca sai mật khẩu phải hiện thông báo và giữ màn đăng nhập. Khi kiểm một hệ thống có phiên thật, thêm kiểm tra phiên ở lớp phù hợp theo yêu cầu.'
       ]]
-    ], undefined, ['playwright']),
+    ], 'Thử tay Mini Banking Lab với đúng và sai mật khẩu. Viết một ca Playwright JavaScript cho đăng nhập thành công, chạy tệp spec, rồi thêm ca sai mật khẩu để kiểm cả thông báo và màn đang hiển thị.', ['playwright']),
     QA5D5: lesson('§6.2, §5.4 · testware bảo trì được · mẫu Playwright POM bổ sung', [
       ['Tách kiến thức về giao diện khỏi ý định test', 'Page Object gom locator và hành động có nghĩa như mở trang, nhập người nhận và gửi lệnh. File spec giữ tiền điều kiện, dữ liệu, quy tắc mong đợi và assertion nghiệp vụ. Khi đổi nhãn nút, sửa locator một nơi. Khi đổi quy tắc hạn mức, sửa hoặc thêm test ở spec.'],
       ['Thiết kế API nhỏ cho Page Object', 'Class là mẫu mô tả dữ liệu và hành động của đối tượng. Khi gọi new TransferPage(page), constructor nhận page của bài test, còn method như submit() thao tác trên page đó. Tách fillTransfer(data) và submit() để test âm có thể kiểm riêng bước nhập hoặc bước gửi. Tạo Page Object cho từng test để dữ liệu không lẫn khi chạy song song.'],
@@ -345,19 +345,19 @@
         snippet("const transfer = new TransferPage(page);\nawait transfer.open();\nawait transfer.fillTransfer({ recipient: 'MOCK-B', amount: '0' });\nawait transfer.submit();\nawait expect(transfer.amountError).toBeVisible();"),
         'Bổ sung spec hợp lệ kiểm confirmation, và case quyền không dựa riêng vào UI. Tên method thể hiện hành vi, còn thông tin cụ thể của một case nằm ở spec.'
       ]]
-    ], undefined, ['pom']),
+    ], 'Chuyển ca đăng nhập ở Mini Banking Lab sang LoginPage rồi chạy lại để kiểm hành vi. Vẽ cấu trúc tương tự cho TransferPage và giải thích thao tác nào nằm trong Page Object, assertion nào nằm trong spec.', ['pom']),
     QA6D1: lesson('§2.1.4–2.1.5, §5.4, §6.2 · DevOps, shift left và automation', [
       ['Pipeline là điểm phản hồi sớm', 'Workflow mô tả sự kiện, job, runner và step. Một job chạy theo các bước cài dependency theo lockfile, chuẩn bị browser và dữ liệu, chạy test rồi lưu report. Chạy bộ smoke trên thay đổi thường xuyên và tách bộ chậm theo rủi ro. Chốt phiên bản Node, OS và testware giúp tái hiện failure.'],
-      ['Chạy đúng môi trường và quan sát được lỗi', 'Playwright cần baseURL hoặc webServer trong cấu hình để mở app lab. Chạy npm ci khi có package-lock. Tách lỗi chuẩn bị môi trường, lỗi test và lỗi ứng dụng. Để exit code của test quyết định job thành bại và tải trace/report khi có lỗi.'],
+      ['Chạy đúng môi trường và quan sát được lỗi', 'Mini Banking Lab mở từ tệp đi kèm spec. Với ứng dụng chạy qua HTTP, cấu hình địa chỉ ứng dụng và có thể dùng webServer để khởi động khi chạy test. Chạy npm ci khi có package-lock. Tách lỗi chuẩn bị môi trường, lỗi test và lỗi ứng dụng. Để exit code của test quyết định job thành bại và tải trace/report khi có lỗi.'],
       ['Quản lý quyền và bí mật', 'Dùng quyền đọc mã cho job chỉ cần chạy test, đưa thông tin xác thực lab qua cơ chế secret của CI và tránh in ra log. Khi workflow chạy mã chưa tin cậy từ pull request, áp dụng chính sách quyền và secrets của repo. Chỉ thay đổi pipeline sau khi nhóm có thể đọc được kết quả.']
     ], [
       ['Ví dụ · Cổng chất lượng', 'Commit thay validation ở ô số tiền. CI chạy unit và API nhanh trước, sau đó UI smoke kiểm đường đi hợp lệ và 0 VND. Nếu UI fail do môi trường không khởi động, log health check và report giúp phân biệt với lỗi validation.']
     ], [
-      ['Workflow cho một repo lab đã cấu hình Playwright', [
+      ['Workflow mở rộng cho dự án có project chromium và HTML reporter', [
         snippet('name: UI smoke\non: [push]\npermissions:\n  contents: read\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v6\n      - uses: actions/setup-node@v6\n        with:\n          node-version: "22"\n          cache: npm\n      - run: npm ci\n      - run: npx playwright install --with-deps chromium\n      - run: npx playwright test --project=chromium\n      - uses: actions/upload-artifact@v4\n        if: ${{ !cancelled() }}\n        with:\n          name: playwright-report\n          path: playwright-report/'),
-        'Bật HTML reporter và định nghĩa project chromium trong cấu hình trước khi chạy ví dụ. Xem step đầu tiên fail, tái hiện với cùng lockfile và không bỏ qua exit code để làm pipeline xanh.'
+        'Dùng mẫu ở bước 8 cho repo Mini Banking Lab mới. Bật HTML reporter và định nghĩa project chromium trong cấu hình trước khi dùng mẫu mở rộng ở trên. Khi có lỗi, đọc step đầu tiên fail và tái hiện với cùng lockfile.'
       ]]
-    ], undefined, ['ci', 'playwright']),
+    ], 'Từ repo lab đã chạy local, thêm workflow YAML mẫu ở bước 8 để chạy khi push. Ghi tên job, số test và step đầu tiên có lỗi trong một lần thử đổi expected. Sửa lại expected rồi xác nhận job chạy đạt.', ['ci', 'playwright']),
     QA6D2: lesson('§5.1.1–5.1.3, §5.1.5–5.1.7 · FL-5.1.1–5.1.3', [
       ['Từ mục tiêu đến phạm vi', 'Test plan ghi mục tiêu, phạm vi, cách kiểm, nguồn lực, lịch, dữ liệu, môi trường, rủi ro và báo cáo cho một hoạt động cụ thể. Strategy diễn đạt cách tiếp cận ở mức cao hơn trong bối cảnh dự án, ví dụ ưu tiên risk-based và kiểm ở lớp thấp nhất có thể. Test plan của QR phải nối với rủi ro như sai người nhận, trùng bút toán và phản hồi trễ.'],
       ['Entry và exit criteria', 'Entry là điều kiện để bắt đầu có ích, ví dụ build smoke pass, dữ liệu seed và hợp đồng API được duyệt. Exit là điều kiện kết thúc như coverage yêu cầu ưu tiên, tình trạng lỗi nghiêm trọng, bằng chứng đối soát và người duyệt rủi ro còn lại. Ghi ai xác nhận và dùng metric nào. “Test hết” không chỉ rõ cách đo.'],
@@ -410,6 +410,10 @@
     ['Bảo mật, hiệu năng và tự động hóa', 'Từ risk checklist sang JMeter, Newman và Playwright. Chọn lớp kiểm, dữ liệu và cách đánh giá kết quả.'],
     ['Quản lý kiểm thử và bài tổng hợp', 'Đưa test vào CI, lập kế hoạch, ước lượng, review testware và tổng hợp evidence cho quyết định phát hành.']
   ];
+  const electiveTitles = new Set([
+    'Lý thuyết và mục tiêu', 'Ví dụ và cách làm', 'Thực hành hai ứng dụng',
+    'Mẫu và bài tập nâng cao', 'Đáp án tham khảo và đánh giá'
+  ]);
 
   for (const week of window.CURRICULUM.weeks) {
     const moduleNumber = Number(/^QA([1-6])D1$/.exec(week.days[0]?.id)?.[1]);
@@ -420,6 +424,13 @@
     for (const day of week.days) {
       const material = lessons[day.id];
       if (!material || !day.studyFlow) continue;
+      const electiveTopic = day.sections.find(section => section.title === 'Lý thuyết và mục tiêu')?.blocks[0]?.text;
+      if (electiveTopic) {
+        for (const extra of day.sections.filter(section => electiveTitles.has(section.title))) {
+          extra.qaElective = true;
+          extra.guideLabel = extra.title + ' · ' + electiveTopic;
+        }
+      }
       const [, [theory], [example], [practice], [review]] = day.studyFlow;
       const section = day.sections[theory];
       section.guideLabel = 'Khái niệm và cách áp dụng';

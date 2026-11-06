@@ -1,0 +1,42 @@
+{
+  "info": {
+    "name": "Code Master · First transfer assertions",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "transferUrl",
+      "value": "https://lizchuhong.github.io/code-master-academy/qa-transfer.json"
+    }
+  ],
+  "item": [
+    {
+      "name": "Read sample transfer",
+      "request": {
+        "method": "GET",
+        "url": "{{transferUrl}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is 200', () => {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Business status is SUCCESS', () => {",
+              "  pm.expect(pm.response.json().status).to.equal('SUCCESS');",
+              "});",
+              "pm.test('Transaction ID is a non-empty string', () => {",
+              "  const id = pm.response.json().transactionId;",
+              "  pm.expect(id).to.be.a('string');",
+              "  pm.expect(id.trim()).not.to.equal('');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
