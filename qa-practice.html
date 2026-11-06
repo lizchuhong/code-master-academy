@@ -4,17 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mini Banking Lab</title>
-  <link rel="stylesheet" href="./guided-flow.css?v=30">
+  <link rel="stylesheet" href="./guided-flow.css?v=31">
   <style>
     *{box-sizing:border-box} main{max-width:660px;margin:auto;padding:18px 16px}
     form{padding:16px;background:var(--paper);border:1px solid var(--line);border-radius:12px}
     label{display:block;margin:9px 0 4px} input{width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit}
     button{margin-top:10px;padding:9px 14px;cursor:pointer} [role=alert]{font-weight:650}
+    .embedded main{padding:12px}.embedded main > a{display:none}
+    .embedded h1{font-size:1.3rem;margin:0}
   </style>
 </head>
 <body data-academy="code">
   <main>
-    <a class="study-text-link" href="./qa-starter.html#playwright">← QA Automation từ số 0</a>
+    <a class="study-text-link" href="./#bai/QA5D4/thuc-hanh">← Bài Playwright</a>
     <h1>Mini Banking Lab</h1>
     <p>Tài khoản mô phỏng <strong>qa-demo</strong>, mật khẩu <strong>test-only-01</strong>.</p>
     <form id="login" novalidate>
@@ -38,6 +40,9 @@
     </section>
   </main>
   <script>
+    if (new URLSearchParams(location.search).get('embedded') === '1') {
+      document.documentElement.classList.add('embedded');
+    }
     const byId = id => document.getElementById(id);
     byId('login').addEventListener('submit', event => {
       event.preventDefault();

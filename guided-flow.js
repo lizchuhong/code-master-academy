@@ -322,11 +322,9 @@
       '</p><h2>' + esc(lessonTitle(item)) + '</h2>');
     const step = pagesFor(item).findIndex(indices => indices.includes(next.part));
     const position = next.resume && step >= 0 ? ' · ' + stages[step].label : '';
-    const actions = element('div', 'study-actions');
-    actions.append(lessonLink(next.resume ? 'Tiếp tục bài này →' : count === items.length ? 'Mở lại bài →' : 'Bắt đầu bài ' +
-      (next.index + 1) + ' →', next.index, next.part, 'study-primary'),
-      link('QA Automation từ số 0', './qa-starter.html', 'secondary'));
-    resume.append(element('p', 'study-resume-meta', 'Bài ' + (next.index + 1) + position), actions);
+    resume.append(element('p', 'study-resume-meta', 'Bài ' + (next.index + 1) + position),
+      lessonLink(next.resume ? 'Tiếp tục bài này →' : count === items.length ? 'Mở lại bài →' : 'Bắt đầu bài ' +
+        (next.index + 1) + ' →', next.index, next.part, 'study-primary'));
     hero.append(resume);
     root.append(hero, catalog(next.index));
   }
@@ -365,9 +363,6 @@
       if (item.id === 'QA3D1') {
         return link('Mở mô phỏng API · Hợp đồng riêng của lab ↗', './lab.html#api', 'study-lab-link secondary');
       }
-      if (item.id === 'QA5D4') {
-        return link('Mở Mini Banking Lab', './qa-practice.html', 'study-lab-link secondary');
-      }
       return;
     }
     const topic = item.title + ' ' + item.weekTitle;
@@ -381,19 +376,11 @@
     if (match) return link(match[2] + ' ↗', './' + match[1], 'study-lab-link secondary');
   }
 
-  const beginnerSteps = {
-    QA3D3: ['assertion', 'Tập đọc JSON và viết assertion từ số 0'],
-    QA5D3: ['postman', 'Chạy collection đầu tiên từ terminal'],
-    QA5D4: ['async', 'Luyện await trước khi chạy Playwright'],
-    QA5D5: ['page-object', 'Chuyển ca đăng nhập sang Page Object'],
-    QA6D1: ['ci', 'Tập commit và chạy CI từ số 0']
-  };
-
   const prerequisiteLinks = {
-    QA5D3: [['W1D1', 'Terminal và môi trường chạy'], ['QA3D3', 'Assertion trong Postman']],
-    QA5D4: [['W17D4', 'Hàm JavaScript'], ['W18D5', 'async/await']],
-    QA5D5: [['QA5D4', 'Viết và chạy test UI cơ bản']],
-    QA6D1: [['W1D5', 'Git và commit'], ['QA5D4', 'Test Playwright'], ['W30D2', 'Cấu trúc workflow GitHub Actions']],
+    QA5D3: [['QA1D2', 'Terminal và môi trường chạy', practiceStage], ['QA3D3', 'Assertion trong Postman', practiceStage]],
+    QA5D4: [['QA3D1', 'Hàm JavaScript', practiceStage]],
+    QA5D5: [['QA5D4', 'Viết và chạy test UI cơ bản', practiceStage]],
+    QA6D1: [['QA5D4', 'Test Playwright', practiceStage]],
     W44D2: [['W37D2', 'Chia đoạn tài liệu'], ['W37D5', 'Trả lời dựa trên nguồn']]
   };
 
@@ -405,9 +392,11 @@
       ? 'Bạn có thể đọc ví dụ ngay. Trước khi tự chạy, ôn các mục sau nếu chưa từng dùng các công cụ này.'
       : 'Ôn các khái niệm này trước khi triển khai bài tích hợp.'));
     const list = element('ul');
-    for (const [lessonId, label] of prerequisites) {
+    for (const [lessonId, label, stage] of prerequisites) {
       const row = element('li');
-      row.append(lessonLink(label, lessonIndex.get(lessonId), undefined, 'study-part-link'));
+      const index = lessonIndex.get(lessonId);
+      const target = stage === undefined ? undefined : pagesFor(items[index])[stage][0];
+      row.append(lessonLink(label, index, target, 'study-part-link'));
       list.append(row);
     }
     box.append(list);
@@ -651,6 +640,11 @@
       root.querySelector('.study-lesson-status').textContent = statusText(item);
     });
     box.append(heading, label, status);
+    if (window.QAStarter?.hasPractice(item.id)) {
+      const progress = element('p', 'study-stage-help');
+      progress.textContent = window.QAStarter.progress(item.id);
+      box.prepend(progress);
+    }
     if (C) {
       const levelLabel = element('label', '', 'Mức độ thành thạo tự đánh giá');
       const level = element('select', '', '<option value="">Chưa đánh giá</option>' +
@@ -664,14 +658,16 @@
       levelLabel.append(level);
       box.append(levelLabel);
     }
-    const checkList = disclosure('Tiêu chí tự kiểm tra và quiz theo nhóm', 'study-disclosure');
+    const checkList = disclosure('Tiêu chí tự kiểm tra của bài', 'study-disclosure');
     const hints = C ? ['Đầu vào và kết quả mong đợi có rõ ràng?', 'Đã xét trường hợp hợp lệ, lỗi và dữ liệu biên?',
       'Có kết quả chạy thử hoặc bằng chứng phù hợp?'] :
       ['Kiểm tra chia động từ, mạo từ, giống và số.', 'Câu có tự nhiên và hợp tình huống du lịch?',
         'Có thông tin lịch sử, giá hoặc thời gian cần xác minh?'];
     const list = element('ul', '', hints.map(hint => '<li>' + hint + '</li>').join(''));
-    checkList.append(list, link('Mở quiz kiến thức nền', '#quiz/' + id(item), 'secondary'));
-    box.prepend(checkList);
+    checkList.append(list);
+    const quiz = disclosure('Ôn 3 câu kiến thức nền', 'study-disclosure');
+    quiz.append(window.LearningPlus.quizPanel(item));
+    box.prepend(checkList, quiz);
     const actions = element('div', 'study-actions');
     actions.append(lessonLink('← Quay lại bài tập', current, pages[practiceStage][0]));
     if (current + 1 < items.length) {
@@ -714,10 +710,7 @@
 
     const article = element('article', 'study-article',
       '<h2 tabindex="-1">' + (stages[stage]?.title ?? 'Tài liệu bổ sung') + '</h2>');
-    const beginner = beginnerSteps[item.id];
-    if (beginner && (stage === 0 || stage === practiceStage)) {
-      article.append(link(beginner[1], './qa-starter.html#' + beginner[0], 'study-lab-link secondary'));
-    }
+    const hasPractice = window.QAStarter?.hasPractice(item.id);
     if (stage === 0) {
       const prerequisites = prerequisitePanel(item);
       if (prerequisites) article.append(prerequisites);
@@ -731,6 +724,7 @@
     }
     if (indices.length > 1) article.append(partNav(item, indices, stage, target));
     if (stage === practiceStage) {
+      if (hasPractice) article.append(window.QAStarter.practicePanel(item.id));
       const lab = practiceLab(item);
       if (lab) article.append(lab);
     }
@@ -738,6 +732,9 @@
     if (C && stage === 0) {
       const lab = practiceLab(item);
       if (lab) article.append(lab);
+    }
+    if (stage === 0 && hasPractice) {
+      article.append(element('p', 'study-stage-help', 'Sau khi đọc ví dụ, dùng bước Thực hành của bài để làm thử và kiểm kết quả.'));
     }
     article.append(notesPanel(item, indices, target));
 
@@ -788,7 +785,6 @@
     toolsMenu = disclosure('Công cụ', 'study-menu');
     const menu = element('div', 'study-menu-links');
     const options = C ? [
-      ['QA Automation từ số 0', './qa-starter.html'],
       ['Phòng thực hành', './lab.html'], ['Bài tập 2 dự án', './projects.html'],
       ['Demo 2 sản phẩm', './product-demo.html'], ['Tài liệu FDE', './fde.html']
     ] : [['Lịch ôn D1–D30', '#lich-on'], ['Sổ lỗi tiếng Ý', '#so-loi']];
@@ -828,7 +824,7 @@
   };
   if (!C) Object.assign(routes, { '#lich-on': reviews, '#so-loi': errors });
 
-  const lessonRoute = /^#bai\/([A-Z0-9]+)(?:\/(\d+))?$/;
+  const lessonRoute = /^#bai\/([A-Z0-9]+)(?:\/(\d+|thuc-hanh))?$/;
   const quizRoute = /^#quiz\/([A-Z0-9]+)$/;
   const isRoute = hash => Object.hasOwn(routes, hash) || lessonRoute.test(hash) || quizRoute.test(hash);
   let disposeLesson;
@@ -861,7 +857,7 @@
     if (index !== undefined) {
       current = index;
       const item = items[index];
-      const part = Number(target);
+      const part = target === 'thuc-hanh' ? pagesFor(item)[practiceStage][0] : Number(target);
       disposeLesson = renderLesson(item, item.sections[part] ? part : pagesFor(item).flat()[0], focus);
     } else if (lessonIndex.has(quiz)) {
       window.LearningPlus.quizView(items[lessonIndex.get(quiz)]);

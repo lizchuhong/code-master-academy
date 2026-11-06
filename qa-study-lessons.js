@@ -203,7 +203,7 @@
       ['Lời giải cho request đọc giao dịch mẫu', snippet('pm.test("HTTP status is 200", () => {\n  pm.response.to.have.status(200);\n});\npm.test("Business status is SUCCESS", () => {\n  pm.expect(pm.response.json()).to.have.property("status", "SUCCESS");\n});\npm.test("Transaction id is present", () => {\n  const body = pm.response.json();\n  pm.expect(body).to.have.property("transactionId");\n  pm.expect(body.transactionId).to.be.a("string");\n  pm.expect(body.transactionId.trim()).not.to.equal("");\n});')],
       ['Tự thử script', 'Đổi expected SUCCESS thành PENDING để thấy đúng assertion fail. Nếu có phản hồi từ một API khác, chọn mã và kiểu dữ liệu dựa trên hợp đồng của API đó.']
     ], [
-        'Import collection v2.1 ở lộ trình QA Automation từ số 0. Dùng GET “Read sample transfer” đọc phản hồi JSON tĩnh. Viết lại ba phép kiểm trong Scripts → Post-response rồi bấm Send.',
+        'Import collection v2.1 ở bước Thực hành của bài này. Dùng GET “Read sample transfer” đọc phản hồi JSON tĩnh. Viết lại ba phép kiểm trong Scripts → Post-response rồi bấm Send.',
         'Kiểm HTTP status bằng 200.',
         'Kiểm trường status bằng SUCCESS.',
         'Kiểm transactionId là chuỗi có nội dung. Đổi một expected để test fail, ghi tên phép kiểm và actual, sau đó khôi phục.'
@@ -316,7 +316,7 @@
       ['Ví dụ · CLI và JUnit', snippet('npx newman run collections/smoke.json -e environments/lab.json -r cli,junit --reporter-junit-export reports/smoke.xml')]
     ], [
       ['CLI và HTML cho đề bài', [
-        'Lưu collection từ nhánh số 0 vào thư mục qa-tu-0. Trong Postman, tạo environment với biến transferUrl lấy từ collection rồi xuất thành qa-lab.postman_environment.json. Đặt hai tệp JSON cùng thư mục với package.json.',
+        'Lưu collection mẫu trong bước Thực hành vào thư mục qa-tu-0. Trong Postman, tạo environment với biến transferUrl lấy từ collection rồi xuất thành qa-lab.postman_environment.json. Đặt hai tệp JSON cùng thư mục với package.json.',
         snippet('npm.cmd install -D newman newman-reporter-htmlextra\nmkdir reports\nnpx.cmd newman run qa-starter.postman_collection.json -e qa-lab.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export reports/smoke.html'),
         'Thử đổi một expected để thấy CLI fail, process trả lỗi và report giúp tìm đúng request. Dùng giá trị thử, giữ secret trong môi trường chạy.'
       ]]
@@ -329,7 +329,7 @@
       ['Ví dụ · Kiểm màn số dư trong Mini Banking Lab', snippet("await expect(page.getByRole('heading', { name: 'Số dư tài khoản' })).toBeVisible();")]
     ], [
       ['Lời giải Playwright Test JavaScript', [
-        'Tải qa-playwright.spec.js cùng qa-practice.html ở bước 7. beforeEach mở lab từ tệp trên máy. Mini Banking Lab kiểm giao diện với dữ liệu giả và không tạo phiên phía máy chủ.',
+        'Tải qa-playwright.spec.js cùng qa-practice.html ngay dưới lab trong bước Thực hành. beforeEach mở lab từ tệp trên máy. Mini Banking Lab kiểm giao diện với dữ liệu giả và không tạo phiên phía máy chủ.',
         snippet("test('đăng nhập đúng', async ({ page }) => {\n  await page.getByLabel('Tên đăng nhập').fill('qa-demo');\n  await page.getByLabel('Mật khẩu').fill('test-only-01');\n  await page.getByRole('button', { name: 'Đăng nhập' }).click();\n  await expect(page.getByRole('heading', { name: 'Số dư tài khoản' })).toBeVisible();\n});"),
         'Ca sai mật khẩu phải hiện thông báo và giữ màn đăng nhập. Khi kiểm một hệ thống có phiên thật, thêm kiểm tra phiên ở lớp phù hợp theo yêu cầu.'
       ]]
@@ -355,9 +355,9 @@
     ], [
       ['Workflow mở rộng cho dự án có project chromium và HTML reporter', [
         snippet('name: UI smoke\non: [push]\npermissions:\n  contents: read\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v6\n      - uses: actions/setup-node@v6\n        with:\n          node-version: "22"\n          cache: npm\n      - run: npm ci\n      - run: npx playwright install --with-deps chromium\n      - run: npx playwright test --project=chromium\n      - uses: actions/upload-artifact@v4\n        if: ${{ !cancelled() }}\n        with:\n          name: playwright-report\n          path: playwright-report/'),
-        'Dùng mẫu ở bước 8 cho repo Mini Banking Lab mới. Bật HTML reporter và định nghĩa project chromium trong cấu hình trước khi dùng mẫu mở rộng ở trên. Khi có lỗi, đọc step đầu tiên fail và tái hiện với cùng lockfile.'
+        'Dùng mẫu ở bước Thực hành của bài cho repo Mini Banking Lab mới. Bật HTML reporter và định nghĩa project chromium trong cấu hình trước khi dùng mẫu mở rộng ở trên. Khi có lỗi, đọc step đầu tiên fail và tái hiện với cùng lockfile.'
       ]]
-    ], 'Từ repo lab đã chạy local, thêm workflow YAML mẫu ở bước 8 để chạy khi push. Ghi tên job, số test và step đầu tiên có lỗi trong một lần thử đổi expected. Sửa lại expected rồi xác nhận job chạy đạt.', ['ci', 'playwright']),
+    ], 'Từ repo lab đã chạy local, thêm workflow YAML mẫu ở bước Thực hành để chạy khi push. Ghi tên job, số test và step đầu tiên có lỗi trong một lần thử đổi expected. Sửa lại expected rồi xác nhận job chạy đạt.', ['ci', 'playwright']),
     QA6D2: lesson('§5.1.1–5.1.3, §5.1.5–5.1.7 · FL-5.1.1–5.1.3', [
       ['Từ mục tiêu đến phạm vi', 'Test plan ghi mục tiêu, phạm vi, cách kiểm, nguồn lực, lịch, dữ liệu, môi trường, rủi ro và báo cáo cho một hoạt động cụ thể. Strategy diễn đạt cách tiếp cận ở mức cao hơn trong bối cảnh dự án, ví dụ ưu tiên risk-based và kiểm ở lớp thấp nhất có thể. Test plan của QR phải nối với rủi ro như sai người nhận, trùng bút toán và phản hồi trễ.'],
       ['Entry và exit criteria', 'Entry là điều kiện để bắt đầu có ích, ví dụ build smoke pass, dữ liệu seed và hợp đồng API được duyệt. Exit là điều kiện kết thúc như coverage yêu cầu ưu tiên, tình trạng lỗi nghiêm trọng, bằng chứng đối soát và người duyệt rủi ro còn lại. Ghi ai xác nhận và dùng metric nào. “Test hết” không chỉ rõ cách đo.'],
