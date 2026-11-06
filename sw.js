@@ -1,14 +1,14 @@
 const PREFIX = 'code-master-academy:';
-const CACHE = PREFIX + 'v31';
+const CACHE = PREFIX + 'v32';
 const LEGACY = ["guided-audited-v23", "guided-release-v24", "guided-verified-v22", "learning-plus-v21", "qa-navigation-coherent-v26", "qa-navigation-fix-v25"];
 const ASSETS = [
   './', './index.html', './curriculum.js', './fde-curriculum.js',
   './qa-curriculum.js', './qa-from-zero.js', './two-app-deep-labs.js', './study-style.css',
   './fde.html', './projects.html', './manifest.webmanifest', './icon.svg',
   './verified-code-lessons.js', './worked-code-examples.js', './product-demo.html', './product-demo.js',
-  './travel-atlas.js', './learning-plus.js?v=30', './learning-plus.css', './lab.html',
-  './lab-engine.js', './banking-qa-detail.js?v=29', './guided-flow.css?v=30', './guided-flow.js?v=31',
-  './qa-study-lessons.js?v=31', './code-study-lessons.js?v=31',
+  './travel-atlas.js', './learning-plus.js?v=32', './learning-plus.css', './lab.html',
+  './lab-engine.js?v=32', './banking-qa-detail.js?v=29', './guided-flow.css?v=30', './guided-flow.js?v=32',
+  './qa-study-lessons.js?v=32', './code-study-lessons.js?v=31',
   './study-upgrade.js?v=30',
 ];
 

@@ -356,6 +356,15 @@
 
   function practiceLab(item) {
     if (!C) return;
+    if (item.studyFlow) {
+      if (['QA2D3', 'QA2D4', 'QA2D5', 'QA3D4', 'QA6D5'].includes(item.id)) {
+        return link('Mở phòng SQL · Dữ liệu Banking ↗', './lab.html#sql', 'study-lab-link secondary');
+      }
+      if (item.id === 'QA3D1') {
+        return link('Mở mô phỏng API · Hợp đồng riêng của lab ↗', './lab.html#api', 'study-lab-link secondary');
+      }
+      return;
+    }
     const topic = item.title + ' ' + item.weekTitle;
     const labs = [
       [/\b(sql|postgres(?:ql)?|database|join|constraint|query)\b/i, 'lab.html#sql', 'Mở phòng thực hành SQL'],
@@ -363,9 +372,33 @@
       [/\b(api|http|rest|postman|newman|fastapi|endpoint)\b/i, 'lab.html#api', 'Mở phòng API giả lập'],
       [/watchlist|stock dashboard|tourism platform|react|javascript|frontend/i, 'product-demo.html', 'Mở demo sản phẩm']
     ];
-    const match = labs.find(([pattern, path]) => pattern.test(topic) &&
-      (!item.studyFlow || path.startsWith('lab.html')));
+    const match = labs.find(([pattern]) => pattern.test(topic));
     if (match) return link(match[2] + ' ↗', './' + match[1], 'study-lab-link secondary');
+  }
+
+  const prerequisiteLinks = {
+    QA5D3: [['W1D1', 'Terminal và môi trường chạy'], ['QA3D3', 'Assertion trong Postman']],
+    QA5D4: [['W17D4', 'Hàm JavaScript'], ['W18D5', 'async/await']],
+    QA5D5: [['QA5D4', 'Viết và chạy test UI cơ bản']],
+    QA6D1: [['W1D5', 'Git và commit'], ['QA5D4', 'Test Playwright'], ['W30D2', 'Cấu trúc workflow GitHub Actions']],
+    W44D2: [['W37D2', 'Chia đoạn tài liệu'], ['W37D5', 'Trả lời dựa trên nguồn']]
+  };
+
+  function prerequisitePanel(item) {
+    const prerequisites = prerequisiteLinks[item.id];
+    if (!prerequisites) return;
+    const box = disclosure('Kiến thức cần trước khi tự chạy bài', 'study-disclosure');
+    box.append(element('p', '', item.studyFlow
+      ? 'Bạn có thể đọc ví dụ ngay. Trước khi tự chạy, ôn các mục sau nếu chưa từng dùng các công cụ này.'
+      : 'Ôn các khái niệm này trước khi triển khai bài tích hợp.'));
+    const list = element('ul');
+    for (const [lessonId, label] of prerequisites) {
+      const row = element('li');
+      row.append(lessonLink(label, lessonIndex.get(lessonId), undefined, 'study-part-link'));
+      list.append(row);
+    }
+    box.append(list);
+    return box;
   }
 
   function listeningSample(value, markup) {
@@ -633,6 +666,9 @@
     } else {
       actions.append(link('Về lộ trình', '#lo-trinh', 'study-primary'));
     }
+    if (['QA6D5', 'W44D5'].includes(item.id)) {
+      actions.append(link('Mốc ứng dụng thực tế', '#cap-do', 'secondary'));
+    }
     box.append(actions);
     return box;
   }
@@ -664,6 +700,10 @@
 
     const article = element('article', 'study-article',
       '<h2 tabindex="-1">' + (stages[stage]?.title ?? 'Tài liệu bổ sung') + '</h2>');
+    if (stage === 0) {
+      const prerequisites = prerequisitePanel(item);
+      if (prerequisites) article.append(prerequisites);
+    }
     if (stage === practiceStage) {
       article.append(element('p', 'study-stage-help',
         'Bản nháp tự lưu khi bạn gõ. Bạn có thể quay lại xem bài và tiếp tục làm.'));
@@ -734,7 +774,7 @@
       ['Demo 2 sản phẩm', './product-demo.html'], ['Tài liệu FDE', './fde.html']
     ] : [['Lịch ôn D1–D30', '#lich-on'], ['Sổ lỗi tiếng Ý', '#so-loi']];
     options.push(['Kế hoạch và phương pháp', '#ke-hoach'], ['Sổ tay', '#so-tay'],
-      ['Kiểm tra cấp độ', '#cap-do'], ['Điểm đến Việt Nam', '#diem-den'],
+      ['Mốc ứng dụng thực tế', '#cap-do'], ['Điểm đến Việt Nam', '#diem-den'],
       ['Dự án tốt nghiệp', '#tot-nghiep'], ['Sao lưu', '#sao-luu']);
     for (const [label, href] of options) menu.append(link(label, href, 'study-menu-link'));
     toolsMenu.append(menu);

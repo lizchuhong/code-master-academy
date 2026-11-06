@@ -86,25 +86,36 @@ function quizView(item=items[current]){
    const out=document.createElement('div');out.className='lp-feedback';out.innerHTML='<h3>Kết quả: '+score+'/3</h3>'+questions.map((q,i)=>'<p><strong>Câu '+(i+1)+': '+(selected[i]===q.correct?'Đúng':'Cần xem lại')+'</strong>. Đáp án: '+E(q.options[q.correct])+'. '+E(q.explain)+'</p>').join('')+'<p>Đạt từ 2/3 để đánh dấu đã kiểm tra nền tảng; không tự đánh dấu hoàn thành bài học.</p>';footer.querySelector('.lp-feedback')?.remove();footer.append(out);
  },'');footer.append(grade,button('Quay lại bài',()=>{const i=items.findIndex(x=>labelItem(x)===key);const part=state.reading?.id===key?state.reading.section:undefined;if(C)openDay(items[i].id,part);else openLesson(i,part)},'secondary'));target.append(footer);
 }
-const stages=C?[
-['QA trái ngành — nền tảng',1,2,'Biết viết test case, bug report, phân biệt Expected/Actual và mô tả luồng dữ liệu'],
-['QA Banking & Automation',3,6,'Làm được SQL/API cơ bản, test tự động mẫu và mô tả rủi ro nghiệp vụ ngân hàng'],
-['Lập trình ứng dụng',7,22,'Hiểu Python, HTTP, SQL và backend đủ để tạo API dữ liệu mẫu'],
-['Full-stack, AI, triển khai',23,46,'Có sản phẩm chạy được, test và README triển khai'],
-['FDE, khách hàng & bàn giao',47,50,'Có demo, runbook, tài liệu yêu cầu, checklist UAT và kế hoạch vận hành']
-]:[
-['Tiếng Ý nền tảng + giao tiếp',1,14,'Dùng câu giới thiệu, chỉ đường, ngữ pháp nền và hội thoại tối thiểu 90 giây'],
-['Hướng dẫn tour & kinh doanh',15,28,'Thuyết minh có nguồn, xử lý khách, báo giá giả lập và mô tả điểm đến'],
-['SEO & booking tiếng Ý',29,38,'Viết email, FAQ, trang tour và phản hồi review'],
-['Thuyết minh nâng cao & portfolio',39,58,'Thuyết minh dài, xử lý tình huống và có portfolio nội dung']
+const stages = [
+  ['QA Banking và SQL nền tảng', 1, 2, 'Tự đọc một yêu cầu chuyển tiền mới, liệt kê phần cần làm rõ, viết bộ case có biên và trạng thái, rồi tái hiện một lỗi và viết báo cáo từ bằng chứng.'],
+  ['QA tích hợp và automation', 3, 6, 'Chạy ca happy path, từ chối quyền và retry trên hệ thống thử. Lưu kết quả API/SQL theo cùng mã tham chiếu, cùng một bộ Playwright do bạn viết và log CI chạy được.'],
+  ['Lập trình backend', 7, 22, 'Tự xây một API có lưu DB, validation và quyền trên tài nguyên. Người khác chạy được theo README và thấy test bắt được một lỗi bạn cố ý đưa vào.'],
+  ['Full-stack, AI và triển khai', 23, 46, 'Triển khai một luồng web có UI, API, dữ liệu và test. Demo lỗi mạng và khôi phục. Nếu dùng AI, đưa cả ca có nguồn và ca thiếu bằng chứng vào đánh giá.'],
+  ['FDE, tích hợp và bàn giao', 47, 50, 'Bàn giao một tính năng chạy được cho người khác thử từ đầu. Nộp phạm vi, hợp đồng tích hợp, kết quả UAT, log triển khai và runbook có cách khôi phục.']
 ];
-function readiness(){
- const records=Object.entries(state.lpQuiz);
- const strong=records.filter(([k,v])=>v.score>=2).length;
- const tot=items.length;
- page('<h2>Lộ trình năng lực & điều kiện chuyển cấp</h2><p>Khóa học vẫn mở tự do để xem lại bài. Mốc chuyển cấp là checklist hỗ trợ, <strong>không tự động khóa kiến thức hay đổi tiến độ cũ.</strong></p><p class="lp-muted">Đã kiểm tra kiến thức nền đạt từ 2/3: '+strong+' bài trên '+tot+'.</p><div id="lp-stages"></div>');
- const area=qs('#lp-stages');
- stages.forEach((s,i)=>{const key='stage-'+i;const checked=!!state.lpReadiness[key];const el=document.createElement('section');el.className='lp-panel';el.innerHTML='<h3>'+E(s[0])+'</h3><p>'+E(C?'Tuần '+s[1]+'–'+s[2]:'Bài '+s[1]+'–'+s[2])+': '+E(s[3])+'</p><p class="lp-muted">Chuẩn bị: đọc lý thuyết → thực hành → bài kiểm tra → tự giải thích không nhìn đáp án.</p>';const label=document.createElement('label');label.className='lp-option';const inp=document.createElement('input');inp.type='checkbox';inp.checked=checked;inp.addEventListener('change',()=>{state.lpReadiness[key]=inp.checked;sync()});label.append(inp,document.createTextNode(' Tôi đã hoàn thành minh chứng chuyển cấp này'));el.append(label);area.append(el)});
+function readiness() {
+  page('<h2>Mốc ứng dụng thực tế</h2><p>Tự làm lại bằng dữ liệu hoặc tình huống mới rồi đánh dấu khi có đầu ra có thể kiểm.</p>' +
+    '<p><a href="#tot-nghiep">Mở trang lưu minh chứng dự án</a></p><div id="lp-stages"></div>');
+  const area = qs('#lp-stages');
+  stages.forEach(([title, first, last, evidence], index) => {
+    const key = 'practical-stage-' + index;
+    const wrap = document.createElement('section');
+    wrap.className = 'lp-panel';
+    wrap.innerHTML = '<h3>' + E(title) + '</h3><p class="lp-muted">' +
+      (C ? 'Tuần ' : 'Bài ') + first + '–' + last + '</p><p>' + E(evidence) + '</p>';
+    const label = document.createElement('label');
+    label.className = 'lp-option';
+    const check = document.createElement('input');
+    check.type = 'checkbox';
+    check.checked = !!state.lpReadiness[key];
+    check.addEventListener('change', () => {
+      state.lpReadiness[key] = check.checked;
+      sync();
+    });
+    label.append(check, document.createTextNode(' Tôi đã làm được và có minh chứng'));
+    wrap.append(label);
+    area.append(wrap);
+  });
 }
 function cardDeck(){
  const list=[];

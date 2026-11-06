@@ -125,7 +125,7 @@
     QA2D3: lesson('§1.4.3–1.4.4 · test data và bằng chứng · thực hành SQL bổ sung', [
       ['Đọc một truy vấn theo thứ tự logic', 'FROM xác định bảng, WHERE chọn dòng, SELECT chọn cột, ORDER BY sắp xếp kết quả rồi LIMIT giới hạn số dòng. Dấu > loại giá trị đúng bằng ngưỡng. NULL trong điều kiện so sánh thông thường cho kết quả chưa xác định, nên dùng IS NULL khi cần tìm giá trị thiếu. DISTINCT có thể che dữ liệu trùng, chỉ dùng khi yêu cầu cần giá trị duy nhất.'],
       ['“Hôm nay” phải có mốc', 'Chốt timezone của ngày nghiệp vụ và cột created_at đang lưu kiểu gì. Dùng khoảng nửa mở [đầu ngày, đầu ngày kế tiếp) để không sót phần lẻ của giây và không kéo nhầm đúng 00:00 ngày sau. Các ví dụ SQL dùng ngày cố định và giả định timestamp đã cùng timezone.'],
-      ['Năm dòng gần nhất cần thứ tự xác định', 'Sắp xếp created_at DESC và dùng trans_id DESC làm tie-breaker ổn định nếu hai giao dịch cùng thời điểm. Giữ số tài khoản dưới dạng text để không mất số 0 đầu. Chỉ đọc dữ liệu giả lập hoặc môi trường kiểm thử được cấp quyền.']
+      ['Năm dòng gần nhất cần thứ tự xác định', 'Sắp xếp created_at DESC và dùng trans_id DESC làm tie-breaker ổn định nếu hai giao dịch cùng thời điểm. Giữ số tài khoản dưới dạng text để không mất số 0 đầu. Dữ liệu phòng SQL dùng ngày giả lập 10/01/2026.']
     ], [
       ['Ví dụ · Lấy ba dòng PENDING của ngày lab', snippet("SELECT trans_id, amount, created_at\nFROM transactions\nWHERE status = 'PENDING'\n  AND created_at >= '2026-01-10 00:00:00'\n  AND created_at <  '2026-01-11 00:00:00'\nORDER BY created_at DESC, trans_id DESC\nLIMIT 3;")]
     ], [
@@ -133,7 +133,11 @@
         snippet("SELECT trans_id, account_no, amount, created_at\nFROM transactions\nWHERE status = 'SUCCESS' AND amount > 10000000\n  AND created_at >= '2026-01-10 00:00:00'\n  AND created_at <  '2026-01-11 00:00:00';\n\nSELECT trans_id, amount, status, created_at\nFROM transactions\nWHERE account_no = '1029384756'\nORDER BY created_at DESC, trans_id DESC\nLIMIT 5;"),
         'Thay hai mốc bằng đầu và cuối ngày cần kiểm. Seed một dòng đúng 10 triệu, một dòng cao hơn và một dòng ngay 00:00 ngày sau để tự kiểm kết quả.'
       ]]
-    ], undefined, ['sql']),
+    ], [
+        'Bảng transactions trong phòng SQL dùng timestamp cùng múi giờ. Dùng ngày giả lập 10/01/2026.',
+        'Lấy giao dịch SUCCESS có amount lớn hơn 10.000.000 VND trong ngày giả lập.',
+        'Lấy 5 giao dịch gần nhất của tài khoản mẫu 1029384756. Ghi cách xử lý khi trùng thời điểm.'
+    ], ['sql']),
     QA2D4: lesson('§1.4.3–1.4.4 · dữ liệu và truy vết · thực hành JOIN bổ sung', [
       ['Xác định số dòng mong đợi', 'Grain của kết quả là một dòng cho mỗi giao dịch thất bại. transactions.account_no ghép accounts.account_no, rồi accounts.customer_id ghép customers.customer_id. Nếu account_no và customer_id là khóa duy nhất ở bảng cha, mỗi giao dịch sẽ chỉ khớp tối đa một dòng cha ở mỗi bước. Kiểm ràng buộc khóa trước khi dựa vào số dòng.'],
       ['INNER JOIN và LEFT JOIN', 'INNER JOIN giữ các giao dịch có dữ liệu khớp đủ cả hai bảng. LEFT JOIN giữ giao dịch dù mất thông tin bảng cha, trả NULL ở cột chưa khớp. Để tìm orphan, đặt điều kiện giao dịch ở bảng t và dùng a.account_no IS NULL sau LEFT JOIN. Đặt lọc cột bảng phải vào WHERE có thể loại dòng NULL mà bạn muốn giữ.'],
@@ -163,7 +167,7 @@
     ], [
       ['Ví dụ · API chuyển tiền giả lập', [
         snippet('POST /v1/transfers\nContent-Type: application/json\n\n{"fromAccount":"MOCK-A","toAccount":"MOCK-B","amount":100000,"currency":"VND"}\n\nHTTP/1.1 201 Created\nLocation: /v1/transfers/T001\nContent-Type: application/json\n\n{"transactionId":"T001","status":"PENDING"}'),
-        'T001 là lệnh đã được tạo trong lab. GET tài nguyên T001 để đọc trạng thái. Kiểm cả dữ liệu lệnh đã lưu và kết quả chuyển tiền cuối cùng nếu đó là mục tiêu case.'
+        'T001 là lệnh đã được tạo trong đặc tả bài. GET tài nguyên T001 để đọc trạng thái. Phòng API trong trình duyệt dùng route /banking/transfers và hợp đồng riêng để luyện đọc status, body và retry.'
       ]]
     ], [
       ['Checklist cho hợp đồng lab', table(
@@ -198,7 +202,12 @@
     ], [
       ['Lời giải script cho hợp đồng POST /v1/transfer', snippet('pm.test("HTTP status is 200", () => {\n  pm.response.to.have.status(200);\n});\npm.test("Business status is SUCCESS", () => {\n  pm.expect(pm.response.json()).to.have.property("status", "SUCCESS");\n});\npm.test("Transaction id is present", () => {\n  const body = pm.response.json();\n  pm.expect(body).to.have.property("transactionId");\n  pm.expect(body.transactionId).to.be.a("string");\n  pm.expect(body.transactionId.trim()).not.to.equal("");\n});')],
       ['Tự thử script', 'Thay response giả bằng status PENDING hoặc transactionId null để thấy đúng assertion fail. Đề này giả định transactionId là chuỗi. Nếu hợp đồng khác, sửa kiểm tra kiểu dựa trên schema.']
-    ], 'API lab POST /v1/transfer xử lý đồng bộ, quy định HTTP 200, status SUCCESS và transactionId là chuỗi có nội dung. Viết ba kiểm tra Post-response. Nêu dữ liệu lỗi để chứng minh từng kiểm tra phát hiện sai khác.', ['postman']),
+    ], [
+        'API giả lập POST /v1/transfer quy định HTTP 200, status SUCCESS và transactionId là chuỗi có nội dung. Viết ba kiểm tra Post-response.',
+        'Kiểm HTTP status bằng 200.',
+        'Kiểm trường status bằng SUCCESS.',
+        'Kiểm transactionId là chuỗi có nội dung. Cho một payload lỗi để chứng minh assertion phát hiện sai khác.'
+    ], ['postman']),
     QA3D4: lesson('§1.1.2, §2.2.1, §5.5 · điều tra failure · thực hành SQL/API bổ sung', [
       ['HTTP 500 là dấu hiệu, chưa phải nguyên nhân', 'Mã 500 báo máy chủ gặp tình trạng ngoài dự kiến khi xử lý request. Ghi thời gian, môi trường, request ID, tham chiếu lệnh, payload đã che dữ liệu và response. Dùng hợp đồng để so request, sau đó đối chiếu log và DB với người phụ trách. Request lỗi có thể kích hoạt một defect ở server, và POST có thể đã tạo side effect trước khi phản hồi lỗi.'],
       ['Kiểm một lệnh theo tham chiếu duy nhất', 'Ví dụ có transactions(client_ref, trans_id, status, amount) và ledger_entries(trans_id, entry_type, amount, currency). Tìm trans_id theo client_ref của lần gửi, sau đó đọc bút toán DEBIT và REVERSAL liên quan. So theo khóa, amount, currency và trạng thái. Tổng số dư riêng lẻ dễ bị ảnh hưởng bởi giao dịch khác.'],
@@ -210,7 +219,11 @@
         snippet("SELECT trans_id, status, amount\nFROM transactions\nWHERE client_ref = 'LAB-R17';\n\nSELECT t.trans_id, e.entry_type, e.amount, e.currency\nFROM transactions t\nLEFT JOIN ledger_entries e ON e.trans_id = t.trans_id\nWHERE t.client_ref = 'LAB-R17';"),
         'Không có dòng transactions khác có transaction với cột ledger NULL. Khi có nhiều bút toán, kiểm loại và số lượng. Lưu evidence đã che thông tin, nêu các giả thiết và bàn giao request ID cho người xem log.'
       ]]
-    ], 'API chuyển tiền lab trả 500 với client_ref LAB-R17. Mô tả bằng chứng Postman cần lấy, điều có thể kết luận từ 500 và điều cần điều tra. Viết SQL đọc transactions(client_ref, trans_id, status, amount) và ledger_entries(trans_id, entry_type, amount, currency) để xác minh đã ghi nợ hoặc hoàn hay chưa.', ['http', 'sql']),
+    ], [
+        'API chuyển tiền giả lập trả HTTP 500 với client_ref LAB-R17. Phòng SQL có bảng transactions và ledger_entries tương ứng.',
+        'Ghi bằng chứng cần lấy từ Postman và điều cần đối chiếu thêm để điều tra nguyên nhân.',
+        'Viết SQL theo client_ref để xác minh có lệnh, có bút toán ghi nợ hoặc đã hoàn tiền hay chưa.'
+    ], ['http', 'sql']),
     QA3D5: lesson('§2.2.1–2.2.3, §2.3 · FL-2.2.1–2.2.3, FL-2.3.1', [
       ['Tách kênh, điều phối, mạng và ghi sổ', 'Trong mô hình lab, kênh Web/Mobile nhận lệnh, lớp điều phối (ví dụ gateway, ESB hoặc bộ tiền xử lý) kiểm quy tắc và chuyển tiếp, core/ledger ghi nhận bút toán. IFT là chuyển nội bộ trong mô hình bài. DFT là chuyển nội địa liên ngân hàng ở lab, có thể dùng tuyến nhanh hoặc tuyến thường tùy đặc tả. Tên lớp, thứ tự và quy tắc STP là cấu hình của hệ thống đang test.'],
       ['Vai trò và thời điểm trạng thái đổi', 'Với luồng doanh nghiệp giả lập, Maker tạo lệnh, Checker phê duyệt và Releaser gửi xử lý khi chính sách yêu cầu. Kiểm quyền, maker-checker separation và thao tác trùng. Nếu có bộ tiền xử lý, xem đặc tả để biết thời điểm kiểm hạn mức, số dư, cut-off, ngày giá trị và loại xử lý tự động hoặc thủ công. Tách duyệt trên kênh khỏi xử lý ở core.'],
@@ -323,7 +336,7 @@
     ], undefined, ['playwright']),
     QA5D5: lesson('§6.2, §5.4 · testware bảo trì được · mẫu Playwright POM bổ sung', [
       ['Tách kiến thức về giao diện khỏi ý định test', 'Page Object gom locator và hành động có nghĩa như mở trang, nhập người nhận và gửi lệnh. File spec giữ tiền điều kiện, dữ liệu, quy tắc mong đợi và assertion nghiệp vụ. Khi đổi nhãn nút, sửa locator một nơi. Khi đổi quy tắc hạn mức, sửa hoặc thêm test ở spec.'],
-      ['Thiết kế API nhỏ cho Page Object', 'Truyền page vào constructor và giữ locator ổn định, không tạo page/browser mới từ mỗi method. Tách fillTransfer(data) và submit() để test âm có thể nhập dữ liệu mà không gửi, hoặc gửi rồi đọc lỗi. Tạo Page Object theo test, tránh giữ state dùng chung giữa chạy song song.'],
+      ['Thiết kế API nhỏ cho Page Object', 'Class là mẫu mô tả dữ liệu và hành động của đối tượng. Khi gọi new TransferPage(page), constructor nhận page của bài test, còn method như submit() thao tác trên page đó. Tách fillTransfer(data) và submit() để test âm có thể kiểm riêng bước nhập hoặc bước gửi. Tạo Page Object cho từng test để dữ liệu không lẫn khi chạy song song.'],
       ['Chọn ranh giới assertion', 'Page Object có thể cung cấp locator hoặc getter cho thông báo và mã lệnh. Test quyết định expected dựa vào case. Với flow dài, giữ phương thức đủ nhỏ để biết bước nào fail và tái dùng không kéo theo side effect bất ngờ.']
     ], [
       ['Ví dụ · Cấu trúc file', snippet('pages/TransferPage.ts  -> locators, open(), fillTransfer(data), submit()\nfixtures/transfer.ts   -> synthetic accounts and seed helpers\ntests/transfer.spec.ts -> authorized, invalid amount, duplicate request')]
@@ -381,7 +394,12 @@
     ], [
       ['Hai câu SQL tìm bất thường', snippet("SELECT a.id, COUNT(cl.id) AS limit_rows\nFROM applications a\nLEFT JOIN credit_limits cl ON cl.application_id = a.id\nWHERE a.status = 'APPROVED'\nGROUP BY a.id\nHAVING COUNT(cl.id) <> 1;\n\nSELECT a.id, a.approved_limit, cl.amount\nFROM applications a\nJOIN credit_limits cl ON cl.application_id = a.id\nWHERE a.status = 'APPROVED'\n  AND a.approved_limit IS DISTINCT FROM cl.amount;")],
       ['Tiêu chí tự đánh giá', 'Có ma trận rủi ro, traceability từ rule đến test và lựa chọn cấp độ hợp lý. Có ca quyền, hiệu năng theo tiêu chí, retry và kiểm dữ liệu. Với dữ liệu chuẩn, hai query trả rỗng. Tạo fixture thiếu, trùng hoặc sai tiền để chứng minh query phát hiện lỗi. Kết luận phát hành cần nêu coverage, lỗi mở và rủi ro còn lại.']
-    ], 'Lab phát hành thẻ dùng applications(id, status, approved_limit) và credit_limits(id, application_id, amount). Hồ sơ APPROVED phải có đúng một hạn mức bằng giá trị đã duyệt. Nêu rủi ro, phạm vi và cách kiểm theo tầng. Viết hai truy vấn PostgreSQL tìm hồ sơ có số record hạn mức sai và số tiền lệch.', ['sql', 'owasp'])
+    ], [
+        'Hồ sơ APPROVED trong lab phải có đúng một record hạn mức với số tiền khớp giá trị đã duyệt. Dùng applications và credit_limits trong phòng SQL.',
+        'Liệt kê rủi ro và phép kiểm theo mức tác động.',
+        'Thiết kế phạm vi và cách kiểm ở cấp component, tích hợp và toàn hệ thống.',
+        'Viết hai truy vấn tìm hồ sơ có số record hạn mức sai và hồ sơ có số tiền lệch.'
+    ], ['sql', 'owasp'])
   };
 
   const modules = [
@@ -413,7 +431,11 @@
       day.sections[example].blocks = blocks(material.example);
       day.sections[review].guideLabel = 'Lời giải và cách tự kiểm';
       day.sections[review].blocks = blocks(material.review);
-      if (material.practice) day.sections[practice].blocks[0].text = material.practice;
+      if (material.practice) {
+        for (const [index, text] of [material.practice].flat().entries()) {
+          day.sections[practice].blocks[index].text = text;
+        }
+      }
     }
   }
 })();

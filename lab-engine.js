@@ -87,14 +87,42 @@ const seedSQL=[
  "CREATE TABLE tours(id INTEGER PRIMARY KEY,title TEXT NOT NULL,price_vnd INTEGER CHECK(price_vnd>=0),seats INTEGER NOT NULL)",
  "CREATE TABLE bookings(id TEXT PRIMARY KEY,tour_id INTEGER REFERENCES tours(id),guests INTEGER CHECK(guests>0),status TEXT)",
  "CREATE TABLE stocks(ticker TEXT PRIMARY KEY,price REAL CHECK(price>=0),source TEXT)",
- "CREATE TABLE transactions(trans_id TEXT PRIMARY KEY,account_no TEXT,amount INTEGER CHECK(amount>0),status TEXT)",
+ "CREATE TABLE customers(customer_id INTEGER PRIMARY KEY,full_name TEXT NOT NULL,phone_number TEXT)",
+ "CREATE TABLE accounts(account_no TEXT PRIMARY KEY,customer_id INTEGER REFERENCES customers(customer_id),balance INTEGER,status TEXT)",
+ "CREATE TABLE transactions(trans_id TEXT PRIMARY KEY,account_no TEXT,amount INTEGER CHECK(amount>0),trans_type TEXT,created_at TEXT,status TEXT,client_ref TEXT)",
+ "CREATE TABLE ledger_entries(trans_id TEXT REFERENCES transactions(trans_id),entry_type TEXT,amount INTEGER,currency TEXT)",
+ "CREATE TABLE applications(id TEXT PRIMARY KEY,status TEXT,approved_limit INTEGER)",
+ "CREATE TABLE credit_limits(id TEXT PRIMARY KEY,application_id TEXT REFERENCES applications(id),amount INTEGER)",
  "INSERT INTO tours VALUES(1,'Ha Noi walk',750000,12),(2,'Ninh Binh',1200000,6),(3,'Hue heritage',950000,8)",
  "INSERT INTO bookings VALUES('B01',1,2,'CONFIRMED'),('B02',2,1,'PENDING'),('B03',1,3,'CONFIRMED')",
  "INSERT INTO stocks VALUES('AAA',100.5,'DEMO'),('BBB',45.2,'DEMO')",
- "INSERT INTO transactions VALUES('T001','TEST-001',100000,'SUCCESS'),('T002','TEST-001',150000,'FAILED'),('T003','TEST-002',250000,'SUCCESS')"
+ "INSERT INTO customers VALUES(1,'Khách mẫu A','TEST-PHONE-A'),(2,'Khách mẫu B','TEST-PHONE-B')",
+ "INSERT INTO accounts VALUES('1029384756',1,120000000,'ACTIVE'),('TEST-002',2,125000000,'ACTIVE')",
+ `INSERT INTO transactions VALUES
+   ('T001','1029384756',60000000,'TRANSFER','2026-01-10 08:00:00','SUCCESS',NULL),
+   ('T002','1029384756',45000000,'TRANSFER','2026-01-10 10:00:00','SUCCESS',NULL),
+   ('T003','TEST-002',100000000,'TRANSFER','2026-01-10 12:00:00','SUCCESS',NULL),
+   ('T004','TEST-002',10000000,'TRANSFER','2026-01-11 00:00:00','SUCCESS',NULL),
+   ('T005','1029384756',550,'TRANSFER','2026-01-10 10:00:00','FAILED',NULL),
+   ('T006','UNKNOWN',660,'TRANSFER','2026-01-10 11:00:00','FAILED',NULL),
+   ('T007','1029384756',20000000,'TRANSFER','2026-01-09 13:00:00','PENDING',NULL),
+   ('T008','1029384756',5000000,'TRANSFER','2026-01-10 13:00:00','PENDING',NULL),
+   ('T88','1029384756',100000,'TRANSFER','2026-01-10 12:00:00','PENDING','LAB-R17')`,
+ "INSERT INTO ledger_entries VALUES('T88','DEBIT',100000,'VND')",
+ "INSERT INTO applications VALUES('A','APPROVED',300),('B','APPROVED',500),('C','APPROVED',900),('D','APPROVED',400)",
+ "INSERT INTO credit_limits VALUES('L1','A',300),('L2','B',500),('L3','B',500),('L4','C',1000)"
 ].join(';\n')+';';
 async function sqlInitialize(){
- if(!sqlLib){if(!sqlLoading)sqlLoading=(async()=>{await scriptLoad(sqlCDN+'sql-wasm.js');return window.initSqlJs({locateFile:file=>sqlCDN+file})})();sqlLib=await sqlLoading}
+ if(!sqlLib){
+  sqlLoading ??= (async()=>{
+   await scriptLoad(sqlCDN+'sql-wasm.js');
+   return window.initSqlJs({locateFile:file=>sqlCDN+file});
+  })().catch(error=>{
+   sqlLoading=null;
+   throw error;
+  });
+  sqlLib=await sqlLoading;
+ }
  if(!db){db=new sqlLib.Database();db.run(seedSQL)}
 }
 el('sql-run').addEventListener('click',async()=>{
