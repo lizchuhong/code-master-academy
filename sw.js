@@ -1,5 +1,5 @@
 const PREFIX = 'code-master-academy:';
-const CACHE = PREFIX + 'v38';
+const CACHE = PREFIX + 'v39';
 const LEGACY = ["guided-audited-v23", "guided-release-v24", "guided-verified-v22", "learning-plus-v21", "qa-navigation-coherent-v26", "qa-navigation-fix-v25"];
 const ASSETS = [
   './', './index.html', './curriculum.js', './fde-curriculum.js',
@@ -9,7 +9,7 @@ const ASSETS = [
   './travel-atlas.js', './learning-plus.js?v=34', './learning-plus.css', './lab.html',
   './lab-engine.js?v=32', './banking-qa-detail.js?v=29', './guided-flow.css?v=31', './guided-flow.js?v=35',
   './daily-review.js?v=3',
-  './qa-study-lessons.js?v=37', './code-study-lessons.js?v=33',
+  './qa-study-lessons.js?v=37', './code-study-lessons.js?v=34',
   './study-upgrade.js?v=30',
   './qa-starter.html', './qa-starter.js?v=34', './qa-practice.html', './qa-practice.html?embedded=1', './qa-playwright.spec.js',
   './qa-transfer.json', './qa-starter.postman_collection.json',
