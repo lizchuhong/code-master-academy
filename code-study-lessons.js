@@ -812,7 +812,16 @@
     W17D3: ['Video bổ trợ · Điều kiện và vòng lặp JavaScript', 'https://www.youtube.com/watch?v=Zi-Q0t4gMC8&t=3391s'],
     W17D4: ['Video bổ trợ · Hàm trong JavaScript', 'https://www.youtube.com/watch?v=Zi-Q0t4gMC8&t=1644s'],
     W18D1: ['Video bổ trợ · Filter và map trong JavaScript', 'https://www.youtube.com/watch?v=Zi-Q0t4gMC8&t=10212s'],
-    W18D2: ['Video bổ trợ · Spread operator; phần destructuring học trong app', 'https://www.youtube.com/watch?v=Zi-Q0t4gMC8&t=9195s']
+    W18D2: ['Video bổ trợ · Spread operator; phần destructuring học trong app', 'https://www.youtube.com/watch?v=Zi-Q0t4gMC8&t=9195s'],
+    W19D1: ['Video bổ trợ · React và JSX, phần 1 của khóa Scrimba/freeCodeCamp', 'https://www.youtube.com/watch?v=x4rFhThSX04&t=0s'],
+    W19D2: ['Video bổ trợ · Props, phần 2 của khóa React', 'https://www.youtube.com/watch?v=x4rFhThSX04&t=8279s'],
+    W19D3: ['Video bổ trợ · State và useState trong phần 3 của khóa React', 'https://www.youtube.com/watch?v=x4rFhThSX04&t=16382s'],
+    W19D4: ['Video bổ trợ · Events và form trong phần 3 của khóa React', 'https://www.youtube.com/watch?v=x4rFhThSX04&t=16382s'],
+    W19D5: ['Video bổ trợ · useEffect trong phần 4 của khóa React', 'https://www.youtube.com/watch?v=x4rFhThSX04&t=35035s'],
+    W29D2: ['Video bổ trợ · Docker fundamentals', 'https://www.youtube.com/watch?v=Wf2eSG3owoA&t=303s'],
+    W29D4: ['Video bổ trợ · Docker inspect, logs và exec', 'https://www.youtube.com/watch?v=Wf2eSG3owoA&t=9966s'],
+    W30D1: ['Video bổ trợ · Workflow GitHub Actions đầu tiên', 'https://www.youtube.com/watch?v=ljINpvCvHnQ'],
+    W30D2: ['Video bổ trợ · Workflow GitHub Actions đầu tiên', 'https://www.youtube.com/watch?v=ljINpvCvHnQ']
   };
 
   for (const week of window.CURRICULUM.weeks) {
