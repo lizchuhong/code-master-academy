@@ -6,9 +6,15 @@
   items.forEach(item => {
     const section = item.sections?.[isCode ? (item.studyFlow?.[0]?.[0] ?? 0) : 0];
     if (!section?.blocks) return;
-    const text = isCode
-      ? 'Thời lượng ước tính: 60–150 phút tùy bài và mức quen thuộc; bài cài đặt hoặc lab có thể cần lâu hơn. Có thể chia thành các phiên 25–30 phút, tiếp tục ở bước đang học và chỉ đánh dấu hoàn thành khi đã thực hành.'
-      : 'Thời lượng ước tính: 60–120 phút cho nội dung, bài tập và luyện nói; chia thành 15–20 phút buổi sáng và các phiên ngắn buổi tối. Bài mô phỏng tour dài có thể cần thêm nhiều buổi. Nếu chưa xong, tiếp tục hôm sau.';
+    const setupOrAutomation = /^(QA3D3|QA5D3|QA5D4|QA5D5|QA6D1|W1D1)$/.test(item.id || '');
+    const advancedProject = /^W4[1-4]D/.test(item.id || '');
+    const text = !isCode
+      ? 'Chia bài thành các phiên sáng và tối; tiếp tục nếu chưa xong.'
+      : setupOrAutomation
+        ? 'Ước tính 2–3 giờ hoặc hơn nếu cài công cụ lần đầu: học 25–40 phút, chuẩn bị/chạy lab 60–100 phút, đối chiếu 15–20 phút. Chia thành nhiều phiên 25–30 phút.'
+        : advancedProject
+          ? 'Ước tính 2–4 giờ hoặc hơn cho đọc, thiết kế, thực hành và tự đánh giá; chia qua nhiều buổi. Ghi rõ phần nào cần dữ liệu hoặc phản hồi thực tế.'
+          : 'Ước tính 60–120 phút: học và ví dụ 25–40 phút, thực hành 25–60 phút, tự kiểm tra 10–20 phút. Chia thành các phiên 25–30 phút và chỉ đánh dấu xong khi đã thực hành.';
     section.blocks.push({type: isCode ? 'Callout' : 'text', text});
     if (isCode && item.id === 'W1D1') {
       for (const part of item.sections) {
@@ -95,6 +101,21 @@
         prompt: practice.blocks.filter(meaningful),
         reference: (reference?.blocks || []).filter(meaningful),
         referenceTitle: 'Đáp án hoặc tiêu chí đối chiếu của bài (tự đánh giá)'
+      };
+    }
+    if (isCode && /^W\d+D\d+$/.test(item.id)) {
+      // Programming/FDE lessons contain a distinct, topic-specific self-check
+      // and worked example; use them instead of the older generic quiz text.
+      const theory = section(item, /^\d+\.\s*Concept explanation$|^Lý thuyết có hệ thống$/i);
+      const blocks = theory?.blocks || [];
+      const checkAt = blocks.findIndex(b => /^Check your work$/i.test(b.text || ''));
+      const exampleAt = blocks.findIndex(b => /^Worked example$/i.test(b.text || ''));
+      const nextText = index => blocks.slice(index + 1).find(b => meaningful(b) && !/heading/i.test(b.type || ''));
+      const exercise = checkAt >= 0 && nextText(checkAt);
+      const worked = exampleAt >= 0 && nextText(exampleAt);
+      if (exercise && worked) return {
+        prompt: [exercise], reference: [worked],
+        referenceTitle: 'Ví dụ đã phân tích trong bài · so sánh cách làm, không phải đáp án duy nhất'
       };
     }
     // Use the actual exercise from the original Banking lesson when available.
