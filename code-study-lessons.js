@@ -865,7 +865,9 @@
           part.blocks.push({type:'Paragraph', text:'Liên hệ web du lịch: khi kiểm giá tour, hãy xác định loại giá, đơn vị tiền và thời điểm áp dụng theo yêu cầu; sau đó kiểm dữ liệu hợp lệ, giá trị thiếu và trường hợp sai đơn vị.'});
         }
         for (const block of part.blocks || []) {
-          if (/^VIDEO (?:search \(<15 phút\)|\(<15 phút, ưu tiên visual\)): Xem video trực tiếp$/.test(block.text || '')) {
+          if (block.text === 'Thời lượng: ~2-2.5 giờ nếu học full, hoặc chia thành micro-task 15-30 phút.') {
+            block.text = 'Thời lượng ước tính được chia theo từng giai đoạn ở phần này. Bạn có thể dừng và học tiếp vào hôm sau.';
+          } else if (/^VIDEO (?:search \(<15 phút\)|\(<15 phút, ưu tiên visual\)): Xem video trực tiếp$/.test(block.text || '')) {
             block.text = hasVideo
               ? 'Video bổ trợ và tài liệu chính thức nằm trong mục Nguồn tham khảo của phần Kiến thức và ví dụ áp dụng. Video có thể dài hơn 15 phút; hãy xem đoạn phù hợp được ghi trong link.'
               : 'Chưa có video trực tiếp được bổ sung trong phần kiến thức chính của bài này. Hãy học nội dung trong app và mở Nguồn tham khảo để đọc tài liệu chính thức.';

@@ -11,7 +11,7 @@
     const text = !isCode
       ? 'Chia bài thành các phiên sáng và tối; tiếp tục nếu chưa xong.'
       : setupOrAutomation
-        ? 'Ước tính 2–3 giờ hoặc hơn nếu cài công cụ lần đầu: học 25–40 phút, chuẩn bị/chạy lab 60–100 phút, đối chiếu 15–20 phút. Chia thành nhiều phiên 25–30 phút.'
+        ? 'Ước tính khoảng 100–160 phút hoặc hơn nếu cài công cụ lần đầu: học 25–40 phút, chuẩn bị/chạy lab 60–100 phút, đối chiếu 15–20 phút. Chia thành nhiều phiên 25–30 phút.'
         : advancedProject
           ? 'Ước tính 2–4 giờ hoặc hơn cho đọc, thiết kế, thực hành và tự đánh giá; chia qua nhiều buổi. Ghi rõ phần nào cần dữ liệu hoặc phản hồi thực tế.'
           : 'Ước tính 60–120 phút: học và ví dụ 25–40 phút, thực hành 25–60 phút, tự kiểm tra 10–20 phút. Chia thành các phiên 25–30 phút và chỉ đánh dấu xong khi đã thực hành.';
