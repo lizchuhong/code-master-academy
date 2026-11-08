@@ -13,6 +13,7 @@
     videoNewman: ['Video bổ trợ · Newman trong khóa Postman của freeCodeCamp', 'https://www.youtube.com/watch?v=VywxIQ2ZXw4&t=7065s'],
     videoSql: ['Video bổ trợ · SQL cơ bản (khóa dùng MySQL; đối chiếu cú pháp PostgreSQL trong bài)', 'https://www.youtube.com/watch?v=HXV3zeQKqGY&t=6971s'],
     videoJoin: ['Video bổ trợ · JOIN (khóa dùng MySQL; đối chiếu cú pháp PostgreSQL trong bài)', 'https://www.youtube.com/watch?v=HXV3zeQKqGY&t=10896s'],
+    videoCi: ['Video bổ trợ · Workflow GitHub Actions đầu tiên', 'https://www.youtube.com/watch?v=ljINpvCvHnQ'],
     newman: ['Postman · Newman and its reporters', 'https://learning.postman.com/docs/reference/newman-cli/command-line-integration-with-newman/'],
     owasp: ['OWASP · API Security Top 10', 'https://owasp.org/API-Security/editions/2023/en/0x11-t10/'],
     load: ['Apache JMeter · Thread Group and reports', 'https://jmeter.apache.org/usermanual/component_reference.html#Thread_Group'],
@@ -374,7 +375,7 @@
         snippet('name: UI smoke\non: [push]\npermissions:\n  contents: read\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v6\n      - uses: actions/setup-node@v6\n        with:\n          node-version: "22"\n          cache: npm\n      - run: npm ci\n      - run: npx playwright install --with-deps chromium\n      - run: npx playwright test --project=chromium\n      - uses: actions/upload-artifact@v4\n        if: ${{ !cancelled() }}\n        with:\n          name: playwright-report\n          path: playwright-report/'),
         'Dùng mẫu ở bước Thực hành của bài cho repo Mini Banking Lab mới. Bật HTML reporter và định nghĩa project chromium trong cấu hình trước khi dùng mẫu mở rộng ở trên. Khi có lỗi, đọc step đầu tiên fail và tái hiện với cùng lockfile.'
       ]]
-    ], 'Từ repo lab đã chạy local, thêm workflow YAML mẫu ở bước Thực hành để chạy khi push. Ghi tên job, số test và step đầu tiên có lỗi trong một lần thử đổi expected. Sửa lại expected rồi xác nhận job chạy đạt.', ['ci', 'playwright']),
+    ], 'Từ repo lab đã chạy local, thêm workflow YAML mẫu ở bước Thực hành để chạy khi push. Ghi tên job, số test và step đầu tiên có lỗi trong một lần thử đổi expected. Sửa lại expected rồi xác nhận job chạy đạt.', ['ci', 'playwright', 'videoCi']),
     QA6D2: lesson('§5.1.1–5.1.3, §5.1.5–5.1.7 · FL-5.1.1–5.1.3', [
       ['Từ mục tiêu đến phạm vi', 'Test plan ghi mục tiêu, phạm vi, cách kiểm, nguồn lực, lịch, dữ liệu, môi trường, rủi ro và báo cáo cho một hoạt động cụ thể. Strategy diễn đạt cách tiếp cận ở mức cao hơn trong bối cảnh dự án, ví dụ ưu tiên risk-based và kiểm ở lớp thấp nhất có thể. Test plan của QR phải nối với rủi ro như sai người nhận, trùng bút toán và phản hồi trễ.'],
       ['Entry và exit criteria', 'Entry là điều kiện để bắt đầu có ích, ví dụ build smoke pass, dữ liệu seed và hợp đồng API được duyệt. Exit là điều kiện kết thúc như coverage yêu cầu ưu tiên, tình trạng lỗi nghiêm trọng, bằng chứng đối soát và người duyệt rủi ro còn lại. Ghi ai xác nhận và dùng metric nào. “Test hết” không chỉ rõ cách đo.'],
@@ -403,6 +404,7 @@
       ['Mẫu comment và cách follow-up', '“TC-QR-02 có bước quét mã nhưng chưa ghi fixture, nên người khác khó phân biệt QR hỏng và người nhận ngừng hoạt động. Tách hai trường hợp và gắn AC tương ứng. Với timeout sau xác nhận, bổ sung tham chiếu và expected chưa ghi lặp.” Sau khi sửa, xác nhận rule được liên kết và cập nhật trạng thái review.']
     ]),
     QA6D5: lesson('§1–6 · bài tổng hợp áp dụng mục tiêu CTFL vào Banking', [
+      ['Phạm vi của bài tổng hợp', 'Đây là bài tập mô phỏng để luyện tư duy và xây dựng bằng chứng học tập, không phải chứng chỉ hay sự công nhận chức danh Senior/Lead. Mức độ sẵn sàng đi làm còn cần thực hành độc lập, phản hồi từ đồng nghiệp và kinh nghiệm trong bối cảnh dự án thật.'],
       ['Dựng mô hình trước khi lập danh sách case', 'Trong lab phát hành thẻ, hồ sơ đi từ submitted sang review rồi approved hoặc declined theo quy tắc. Approval hợp lệ tạo một record hạn mức và cho phép bước phát hành theo hợp đồng. Nêu test basis, dữ liệu eligibility, vai trò duyệt và cách phát hiện hai job cùng xử lý một hồ sơ. Bắt đầu bằng review các rule còn mơ hồ.'],
       ['Ghép kỹ thuật, cấp độ và rủi ro', 'EP/BVA cho thu nhập, hạn mức và trường bắt buộc. Decision table cho eligibility và policy. State transition cho vòng đời hồ sơ. Component kiểm tính hạn mức, integration kiểm trao đổi với hệ chấm điểm giả lập, system kiểm luồng và acceptance kiểm cách nghiệp vụ xác minh kết quả. Bổ sung API quyền hồ sơ, thời gian xử lý, lỗi đối tác và retry.'],
       ['Thiết kế dữ liệu kiểm tra độc lập', 'Schema lab gồm applications(id, status, approved_limit) và credit_limits(id, application_id, amount). Đọc records theo khóa, so số và kiểm mỗi hồ sơ approved có đúng một hạn mức. Query ngoại lệ dùng LEFT JOIN để phát hiện thiếu record, hoặc HAVING COUNT(cl.id) <> 1 để phát hiện thiếu/trùng. Dùng dữ liệu giả và ghi bằng chứng có thể tái hiện.']
