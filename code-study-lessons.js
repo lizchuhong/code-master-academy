@@ -787,6 +787,33 @@
 
   const heading = text => ({ type: 'Heading 3', text });
   const paragraph = text => ({ type: 'Paragraph', text });
+  const videoByLesson = {
+    W1D1: ['Video bổ trợ · Python từ đầu, phần giới thiệu', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=0s'],
+    W1D2: ['Video bổ trợ · Biến và kiểu dữ liệu Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=906s'],
+    W1D3: ['Video bổ trợ · Kiểu dữ liệu Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=906s'],
+    W1D4: ['Video bổ trợ · Phép tính với số trong Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=2298s'],
+    W1D5: ['Video bổ trợ · Git cho người mới, GitHub', 'https://www.youtube.com/watch?v=r8jQ9hVA2qs'],
+    W2D1: ['Video bổ trợ · if và so sánh trong Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=6006s'],
+    W2D2: ['Video bổ trợ · Rẽ nhánh trong Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=6006s'],
+    W2D3: ['Video bổ trợ · Vòng lặp for trong Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=9164s'],
+    W2D4: ['Video bổ trợ · Vòng lặp while trong Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=8053s'],
+    W3D1: ['Video bổ trợ · List trong Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=3507s'],
+    W3D2: ['Video bổ trợ · Tuple trong Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=4737s'],
+    W3D3: ['Video bổ trợ · Dictionary trong Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=7637s'],
+    W4D1: ['Video bổ trợ · Hàm trong Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=5055s'],
+    W4D3: ['Video bổ trợ · Try/except trong Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=11057s'],
+    W4D4: ['Video bổ trợ · Đọc file trong Python', 'https://www.youtube.com/watch?v=rfscVS0vtbw&t=11561s'],
+    W7D1: ['Video bổ trợ · Bảng và khóa trong SQL (ví dụ dùng MySQL; đối chiếu cú pháp PostgreSQL trong bài)', 'https://www.youtube.com/watch?v=HXV3zeQKqGY&t=1390s'],
+    W7D2: ['Video bổ trợ · Truy vấn SQL cơ bản (ví dụ dùng MySQL)', 'https://www.youtube.com/watch?v=HXV3zeQKqGY&t=6971s'],
+    W7D3: ['Video bổ trợ · Thêm dữ liệu SQL (ví dụ dùng MySQL)', 'https://www.youtube.com/watch?v=HXV3zeQKqGY&t=5465s'],
+    W7D5: ['Video bổ trợ · SQL JOIN (ví dụ dùng MySQL)', 'https://www.youtube.com/watch?v=HXV3zeQKqGY&t=10896s'],
+    W17D1: ['Video bổ trợ · Biến và hằng trong JavaScript', 'https://www.youtube.com/watch?v=Zi-Q0t4gMC8&t=466s'],
+    W17D2: ['Video bổ trợ · Object và Array trong JavaScript', 'https://www.youtube.com/watch?v=Zi-Q0t4gMC8&t=1273s'],
+    W17D3: ['Video bổ trợ · Điều kiện và vòng lặp JavaScript', 'https://www.youtube.com/watch?v=Zi-Q0t4gMC8&t=3391s'],
+    W17D4: ['Video bổ trợ · Hàm trong JavaScript', 'https://www.youtube.com/watch?v=Zi-Q0t4gMC8&t=1644s'],
+    W18D1: ['Video bổ trợ · Filter và map trong JavaScript', 'https://www.youtube.com/watch?v=Zi-Q0t4gMC8&t=10212s'],
+    W18D2: ['Video bổ trợ · Spread operator; phần destructuring học trong app', 'https://www.youtube.com/watch?v=Zi-Q0t4gMC8&t=9195s']
+  };
 
   for (const week of window.CURRICULUM.weeks) {
     for (const day of week.days) {
@@ -806,6 +833,8 @@
         ...(earlier.length ? [heading('From the original lesson'), ...earlier] : [])
       ];
       section.sources = sources.map(source => refs[source]);
+      if (videoByLesson[day.id]) section.sources.push(videoByLesson[day.id]);
     }
   }
 })();
+
