@@ -7,6 +7,12 @@
     sql: ['PostgreSQL · SQL tutorial', 'https://www.postgresql.org/docs/current/tutorial-sql.html'],
     http: ['IETF · RFC 9110 HTTP Semantics', 'https://www.rfc-editor.org/rfc/rfc9110.html'],
     postman: ['Postman · Write post-response scripts', 'https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-scripts/'],
+    videoApi: ['Video bổ trợ · API/JSON trong khóa Postman của freeCodeCamp (giao diện có thể đã đổi)', 'https://www.youtube.com/watch?v=VywxIQ2ZXw4&t=2481s'],
+    videoPostman: ['Video bổ trợ · Query params và request trong khóa Postman của freeCodeCamp', 'https://www.youtube.com/watch?v=VywxIQ2ZXw4&t=955s'],
+    videoTests: ['Video bổ trợ · Bắt đầu viết test trong Postman của freeCodeCamp', 'https://www.youtube.com/watch?v=VywxIQ2ZXw4&t=3772s'],
+    videoNewman: ['Video bổ trợ · Newman trong khóa Postman của freeCodeCamp', 'https://www.youtube.com/watch?v=VywxIQ2ZXw4&t=7065s'],
+    videoSql: ['Video bổ trợ · SQL cơ bản (khóa dùng MySQL; đối chiếu cú pháp PostgreSQL trong bài)', 'https://www.youtube.com/watch?v=HXV3zeQKqGY&t=6971s'],
+    videoJoin: ['Video bổ trợ · JOIN (khóa dùng MySQL; đối chiếu cú pháp PostgreSQL trong bài)', 'https://www.youtube.com/watch?v=HXV3zeQKqGY&t=10896s'],
     newman: ['Postman · Newman and its reporters', 'https://learning.postman.com/docs/reference/newman-cli/command-line-integration-with-newman/'],
     owasp: ['OWASP · API Security Top 10', 'https://owasp.org/API-Security/editions/2023/en/0x11-t10/'],
     load: ['Apache JMeter · Thread Group and reports', 'https://jmeter.apache.org/usermanual/component_reference.html#Thread_Group'],
@@ -139,7 +145,7 @@
         'Bảng transactions trong phòng SQL dùng timestamp cùng múi giờ. Dùng ngày giả lập 10/01/2026.',
         'Lấy giao dịch SUCCESS có amount lớn hơn 10.000.000 VND trong ngày giả lập.',
         'Lấy 5 giao dịch gần nhất của tài khoản mẫu 1029384756. Ghi cách xử lý khi trùng thời điểm.'
-    ], ['sql']),
+    ], ['sql', 'videoSql']),
     QA2D4: lesson('§1.4.3–1.4.4 · dữ liệu và truy vết · thực hành JOIN bổ sung', [
       ['Xác định số dòng mong đợi', 'Grain của kết quả là một dòng cho mỗi giao dịch thất bại. transactions.account_no ghép accounts.account_no, rồi accounts.customer_id ghép customers.customer_id. Nếu account_no và customer_id là khóa duy nhất ở bảng cha, mỗi giao dịch sẽ chỉ khớp tối đa một dòng cha ở mỗi bước. Kiểm ràng buộc khóa trước khi dựa vào số dòng.'],
       ['INNER JOIN và LEFT JOIN', 'INNER JOIN giữ các giao dịch có dữ liệu khớp đủ cả hai bảng. LEFT JOIN giữ giao dịch dù mất thông tin bảng cha, trả NULL ở cột chưa khớp. Để tìm orphan, đặt điều kiện giao dịch ở bảng t và dùng a.account_no IS NULL sau LEFT JOIN. Đặt lọc cột bảng phải vào WHERE có thể loại dòng NULL mà bạn muốn giữ.'],
@@ -151,7 +157,7 @@
         snippet("SELECT c.full_name, c.phone_number, a.account_no, t.amount\nFROM transactions t\nJOIN accounts a ON a.account_no = t.account_no\nJOIN customers c ON c.customer_id = a.customer_id\nWHERE t.status = 'FAILED';"),
         'Trong môi trường test, thêm t.trans_id để đối chiếu từng dòng. Seed hai giao dịch thất bại của cùng tài khoản và một giao dịch thành công. Kỳ vọng có hai dòng với đúng số tiền.'
       ]]
-    ], undefined, ['sql']),
+    ], undefined, ['sql', 'videoJoin']),
     QA2D5: lesson('§1.4.4, §5.3.1 · bằng chứng kiểm thử · thực hành aggregate bổ sung', [
       ['Lọc trước và sau khi nhóm', 'WHERE chọn giao dịch SUCCESS trong cửa sổ ngày cần kiểm. GROUP BY account_no tạo một nhóm cho mỗi tài khoản. COUNT(*) đếm dòng, COUNT(amount) bỏ giá trị amount NULL, và SUM(amount) cộng các giá trị có dữ liệu. HAVING lọc theo tổng của từng nhóm. Dùng > nếu yêu cầu nói “lớn hơn”, và >= nếu bao gồm đúng ngưỡng.'],
       ['Cùng phạm vi trước khi đối soát', 'Thống nhất mã trạng thái, currency, múi giờ, nguồn dữ liệu và loại giao dịch. Chỉ cộng các dòng VND nếu ngưỡng ghi bằng VND, hoặc dùng quy tắc quy đổi đã thống nhất. Bảng giao dịch và ledger có thể có grain khác nhau. Tổng số tiền từ hai nguồn khớp vẫn có thể che hai giao dịch lệch bù nhau. Kiểm tiếp theo trans_id khi cần.'],
@@ -181,7 +187,7 @@
         ['Amount ngoài ràng buộc', '422', 'Lỗi validation theo hợp đồng lab'],
         ['Server lỗi sau gửi', '500', 'Tra cứu tham chiếu để xác định side effect']
       )]
-    ], 'Dùng request và response POST /v1/transfers ở phần Học bài. Giải thích các thành phần và cách biết giao dịch đã hoàn tất. Viết checklist cho 201, 400, 401, 403, 422 và 500 theo hợp đồng giả lập, gồm điểm kiểm trạng thái và dữ liệu ngoài status code.', ['http']),
+    ], 'Dùng request và response POST /v1/transfers ở phần Học bài. Giải thích các thành phần và cách biết giao dịch đã hoàn tất. Viết checklist cho 201, 400, 401, 403, 422 và 500 theo hợp đồng giả lập, gồm điểm kiểm trạng thái và dữ liệu ngoài status code.', ['http', 'videoApi']),
     QA3D2: lesson('§1.4.3, §2.2.1 · testware và tích hợp · thực hành Postman bổ sung', [
       ['Chuẩn bị một request có thể lặp lại', 'Đặt biến base_url trỏ đến máy chủ lab. Dùng method POST và đường dẫn /v1/auth/login. Trong Body chọn raw → JSON, gửi username và password theo hợp đồng. Kiểm Content-Type: application/json. Accept: application/json diễn đạt kiểu phản hồi mong muốn nếu endpoint dùng thương lượng nội dung.'],
       ['Tách endpoint login và request có xác thực', 'Login nhận thông tin xác thực theo thiết kế và trả access token. Dùng token trong Authorization: Bearer <token> ở endpoint bảo vệ tiếp theo nếu hợp đồng yêu cầu. Query params phục vụ lọc, ví dụ GET /v1/transfers?status=PENDING. Không đặt mật khẩu hoặc token vào URL.'],
@@ -194,8 +200,10 @@
         snippet('POST {{base_url}}/v1/auth/login\nContent-Type: application/json\nAccept: application/json\n\n{"username":"demo-tester","password":"TEST-ONLY-EXAMPLE"}\n\nHTTP/1.1 200 OK\nContent-Type: application/json\n\n{"accessToken":"MOCK-TOKEN","expiresIn":3600}'),
         'accessToken là mẫu giả. Khi mô tả cách kiểm, ghi rõ test trả 200, JSON đúng kiểu, token có giá trị, và password không xuất hiện trong response.'
       ]]
-    ], undefined, ['http', 'postman']),
+    ], undefined, ['http', 'postman', 'videoPostman']),
     QA3D3: lesson('§6.1–6.2 · tool và automation · thực hành assertion bổ sung', [
+      ['JavaScript tối thiểu cho người chưa biết code', 'Script là một chuỗi lệnh. Dấu ngoặc nhọn { } gom các câu lệnh vào cùng một khối; dấu ngoặc tròn () chứa đầu vào của hàm. Một chuỗi ký tự nằm trong dấu nháy, ví dụ "SUCCESS"; số 200 không có dấu nháy. const body = pm.response.json(); đọc JSON của response rồi đặt tên body cho dữ liệu đó. body.status là cách lấy thuộc tính status. Nếu response không phải JSON hợp lệ, lệnh đọc JSON có thể báo lỗi; hãy kiểm tra response và hợp đồng trước.'],
+      ['Đọc từng phần của một bài test', 'pm.test("tên test", () => { ... }) khai báo một test trong Postman; đoạn giữa { } là những gì Postman chạy để kiểm tra. pm.response.to.have.status(200) kiểm status HTTP; pm.expect(body.status).to.equal("SUCCESS") so giá trị thực tế trong body với giá trị mong đợi. Khai báo const body = pm.response.json() trong cùng khối { } trước khi dùng body, hoặc ở phạm vi bên ngoài cả test nếu muốn các test dùng chung. Một test fail không tự giải thích nguyên nhân: mở response, đọc actual và so với hợp đồng.'],
       ['Một assertion có một mục đích rõ', 'Sau khi gửi request ở Postman, đặt kiểm tra trong Scripts → Post-response. Đặt tên theo hợp đồng để biết ngay vì sao fail. Kiểm HTTP trước, sau đó schema và quy tắc nghiệp vụ. Với response JSON, phân biệt field thiếu, null, chuỗi rỗng, sai kiểu và giá trị khác enum mong đợi.'],
       ['Kiểm cả dữ liệu sau request khi cần', 'Body báo SUCCESS có thể chưa chứng minh đã lưu hoặc ghi sổ đúng. Thêm request GET theo transactionId hoặc đối chiếu dữ liệu lab ở mức tích hợp. Lưu biến cho request sau khi đã xác nhận response hợp lệ, và dùng dữ liệu riêng cho mỗi lần chạy.'],
       ['Chọn phép so sánh ổn định', 'So exact cho enum và giá trị hợp đồng. Tránh so toàn bộ JSON nếu có id và timestamp thay đổi. Chỉ dùng ngưỡng response time theo tiêu chí đã thống nhất và môi trường đo được kiểm soát. Tách test thành công khỏi test validation để cùng một assertion không áp dụng sai cho response lỗi.']
@@ -209,7 +217,7 @@
         'Kiểm HTTP status bằng 200.',
         'Kiểm trường status bằng SUCCESS.',
         'Kiểm transactionId là chuỗi có nội dung. Đổi một expected để test fail, ghi tên phép kiểm và actual, sau đó khôi phục.'
-    ], ['postman']),
+    ], ['postman', 'js', 'videoTests']),
     QA3D4: lesson('§1.1.2, §2.2.1, §5.5 · điều tra failure · thực hành SQL/API bổ sung', [
       ['HTTP 500 là dấu hiệu, chưa phải nguyên nhân', 'Mã 500 báo máy chủ gặp tình trạng ngoài dự kiến khi xử lý request. Ghi thời gian, môi trường, request ID, tham chiếu lệnh, payload đã che dữ liệu và response. Dùng hợp đồng để so request, sau đó đối chiếu log và DB với người phụ trách. Request lỗi có thể kích hoạt một defect ở server, và POST có thể đã tạo side effect trước khi phản hồi lỗi.'],
       ['Kiểm một lệnh theo tham chiếu duy nhất', 'Ví dụ có transactions(client_ref, trans_id, status, amount) và ledger_entries(trans_id, entry_type, amount, currency). Tìm trans_id theo client_ref của lần gửi, sau đó đọc bút toán DEBIT và REVERSAL liên quan. So theo khóa, amount, currency và trạng thái. Tổng số dư riêng lẻ dễ bị ảnh hưởng bởi giao dịch khác.'],
@@ -323,7 +331,7 @@
         snippet('npm.cmd install -D newman newman-reporter-htmlextra\nmkdir reports\nnpx.cmd newman run qa-starter.postman_collection.json -e qa-lab.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export reports/smoke.html'),
         'Thử đổi một expected để thấy CLI fail, process trả lỗi và report giúp tìm đúng request. Dùng giá trị thử, giữ secret trong môi trường chạy.'
       ]]
-    ], 'Chạy collection mẫu bằng CLI trước. Thêm environment và báo cáo HTML theo đề, chạy lại với một expected sai, rồi lưu lệnh, tên phép kiểm lỗi và báo cáo.', ['newman', 'node']),
+    ], 'Chạy collection mẫu bằng CLI trước. Thêm environment và báo cáo HTML theo đề, chạy lại với một expected sai, rồi lưu lệnh, tên phép kiểm lỗi và báo cáo.', ['newman', 'node', 'videoNewman']),
     QA5D4: lesson('§6.2, §2.2.1 · lợi ích, rủi ro và vị trí của UI automation', [
       ['Đọc JavaScript từ số 0 trước khi tự động hóa', 'const đặt tên cho một giá trị hoặc đối tượng, ví dụ const amount = 10000;. Chuỗi nằm trong dấu nháy, ví dụ \'Đăng nhập\'. Một hàm nhóm các bước: phần trong { } là thân hàm. Dấu chấm gọi khả năng của đối tượng: page.getByLabel(...) tìm phần tử theo nhãn. Trong Playwright Test, test(tên, async ({ page }) => { ... }) khai báo một ca; page là trang do framework cấp. async cho phép dùng await để chờ thao tác bất đồng bộ hoàn tất. Đừng nhầm dấu = gán giá trị với so sánh ===.'],
       ['Dự đoán trước khi chạy', "Ví dụ: const expected = 'Số dư tài khoản'; await expect(page.getByRole('heading', { name: expected })).toBeVisible();. Dòng đầu lưu tên heading cần tìm; dòng sau chờ heading có tên đó hiển thị. Nếu tên thực tế khác, assertion sẽ thất bại sau thời gian chờ. Tự đổi expected thành một tên khác và giải thích vì sao kết quả thay đổi."],
@@ -341,6 +349,8 @@
       ]]
     ], 'Thử tay Mini Banking Lab với đúng và sai mật khẩu. Viết một ca Playwright JavaScript cho đăng nhập thành công, chạy tệp spec, rồi thêm ca sai mật khẩu để kiểm cả thông báo và màn đang hiển thị.', ['playwright', 'js', 'node']),
     QA5D5: lesson('§6.2, §5.4 · testware bảo trì được · mẫu Playwright POM bổ sung', [
+      ['Trước khi đọc Page Object', 'Một class mô tả cách tạo đối tượng có dữ liệu và hành động liên quan. constructor(page) nhận trang Playwright; this.page = page lưu trang đó cho đối tượng. Method là hàm trong class; gọi login.enterUsername("qa-demo") sẽ chạy method enterUsername với dữ liệu đã truyền. Dấu chấm truy cập thuộc tính hoặc method. Đây là JavaScript; không cần học hết lập trình hướng đối tượng trước khi đọc ví dụ nhỏ.'],
+      ['Đọc luồng từ test sang page', 'Trong test, const login = new LoginPage(page) tạo đối tượng; await login.signIn("qa-demo", "test-only-01") gọi thao tác đã nhóm. Test vẫn cần một expect cho kết quả người dùng quan sát được. Page Object không tự chứng minh đăng nhập thành công chỉ vì thao tác click không báo lỗi.'],
       ['Tách kiến thức về giao diện khỏi ý định test', 'Page Object gom locator và hành động có nghĩa như mở trang, nhập người nhận và gửi lệnh. File spec giữ tiền điều kiện, dữ liệu, quy tắc mong đợi và assertion nghiệp vụ. Khi đổi nhãn nút, sửa locator một nơi. Khi đổi quy tắc hạn mức, sửa hoặc thêm test ở spec.'],
       ['Thiết kế API nhỏ cho Page Object', 'Class là mẫu mô tả dữ liệu và hành động của đối tượng. Khi gọi new TransferPage(page), constructor nhận page của bài test, còn method như submit() thao tác trên page đó. Tách fillTransfer(data) và submit() để test âm có thể kiểm riêng bước nhập hoặc bước gửi. Tạo Page Object cho từng test để dữ liệu không lẫn khi chạy song song.'],
       ['Chọn ranh giới assertion', 'Page Object có thể cung cấp locator hoặc getter cho thông báo và mã lệnh. Test quyết định expected dựa vào case. Với flow dài, giữ phương thức đủ nhỏ để biết bước nào fail và tái dùng không kéo theo side effect bất ngờ.']
@@ -351,8 +361,9 @@
         snippet("const transfer = new TransferPage(page);\nawait transfer.open();\nawait transfer.fillTransfer({ recipient: 'MOCK-B', amount: '0' });\nawait transfer.submit();\nawait expect(transfer.amountError).toBeVisible();"),
         'Bổ sung spec hợp lệ kiểm confirmation, và case quyền không dựa riêng vào UI. Tên method thể hiện hành vi, còn thông tin cụ thể của một case nằm ở spec.'
       ]]
-    ], 'Chuyển ca đăng nhập ở Mini Banking Lab sang LoginPage rồi chạy lại để kiểm hành vi. Vẽ cấu trúc tương tự cho TransferPage và giải thích thao tác nào nằm trong Page Object, assertion nào nằm trong spec.', ['pom']),
+    ], 'Chuyển ca đăng nhập ở Mini Banking Lab sang LoginPage rồi chạy lại để kiểm hành vi. Vẽ cấu trúc tương tự cho TransferPage và giải thích thao tác nào nằm trong Page Object, assertion nào nằm trong spec.', ['pom', 'js']),
     QA6D1: lesson('§2.1.4–2.1.5, §5.4, §6.2 · DevOps, shift left và automation', [
+      ['Đọc YAML từ số 0', 'YAML mô tả cấu hình theo cặp key: value. Thụt lề bằng dấu cách thể hiện quan hệ cha–con; các dòng bắt đầu bằng dấu gạch ngang là phần tử danh sách. Trong GitHub Actions, workflow chứa jobs, job chứa steps; uses chọn action, còn run thực hiện lệnh trên runner. Giữ thụt lề nhất quán, không tự đưa token hoặc dữ liệu thật vào file workflow.'],
       ['Pipeline là điểm phản hồi sớm', 'Workflow mô tả sự kiện, job, runner và step. Một job chạy theo các bước cài dependency theo lockfile, chuẩn bị browser và dữ liệu, chạy test rồi lưu report. Chạy bộ smoke trên thay đổi thường xuyên và tách bộ chậm theo rủi ro. Chốt phiên bản Node, OS và testware giúp tái hiện failure.'],
       ['Chạy đúng môi trường và quan sát được lỗi', 'Mini Banking Lab mở từ tệp đi kèm spec. Với ứng dụng chạy qua HTTP, cấu hình địa chỉ ứng dụng và có thể dùng webServer để khởi động khi chạy test. Chạy npm ci khi có package-lock. Tách lỗi chuẩn bị môi trường, lỗi test và lỗi ứng dụng. Để exit code của test quyết định job thành bại và tải trace/report khi có lỗi.'],
       ['Quản lý quyền và bí mật', 'Dùng quyền đọc mã cho job chỉ cần chạy test, đưa thông tin xác thực lab qua cơ chế secret của CI và tránh in ra log. Khi workflow chạy mã chưa tin cậy từ pull request, áp dụng chính sách quyền và secrets của repo. Chỉ thay đổi pipeline sau khi nhóm có thể đọc được kết quả.']
