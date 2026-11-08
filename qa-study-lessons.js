@@ -11,6 +11,8 @@
     owasp: ['OWASP · API Security Top 10', 'https://owasp.org/API-Security/editions/2023/en/0x11-t10/'],
     load: ['Apache JMeter · Thread Group and reports', 'https://jmeter.apache.org/usermanual/component_reference.html#Thread_Group'],
     playwright: ['Playwright · Auto-waiting and assertions', 'https://playwright.dev/docs/actionability'],
+    js: ['MDN · JavaScript first steps', 'https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting'],
+    node: ['Node.js · Introduction', 'https://nodejs.org/en/learn/getting-started/introduction-to-nodejs'],
     pom: ['Playwright · Page object models', 'https://playwright.dev/docs/pom'],
     ci: ['GitHub · Workflow syntax for GitHub Actions', 'https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions'],
     napas: ['NAPAS · Dịch vụ chuyển tiền nhanh', 'https://napas.com.vn/dich-vu-chuyen-tien-nhanh']
@@ -309,6 +311,7 @@
       ['Cấu hình và cách báo cáo', 'Đặt Threads=500, Ramp-up=10s, Loops=5. Một HTTP sampler mỗi vòng tạo tối đa 2.500 lần thử nếu hoàn tất đủ vòng, chưa tính sampler khác. Báo duration, số mẫu, throughput, average, p95 và error %, rồi phân loại lỗi theo status và nguyên nhân đo được. Giữ báo cáo nhẹ khi chạy tải và phân tích kết quả sau.']
     ], undefined, ['load']),
     QA5D3: lesson('§6.1–6.2, §5.4 · công cụ, rủi ro automation và quản lý phiên bản', [
+      ['Trước khi dùng dòng lệnh · bắt đầu từ số 0', 'Terminal là nơi gõ lệnh; thư mục hiện tại quyết định nơi lệnh tìm các file tương đối. Node.js cho phép chạy JavaScript ngoài trình duyệt; npm là công cụ quản lý package đi kèm bản cài Node.js. Newman là chương trình chạy collection Postman từ dòng lệnh. Mở terminal trong thư mục lab, kiểm tra node --version và npm --version, rồi dùng các lệnh cài đặt trong lời giải. Nếu lệnh không được nhận diện, dừng tại bước kiểm tra cài đặt và PATH trước khi chạy tiếp.'],
       ['Collection là testware có phiên bản', 'Newman chạy collection Postman qua CLI, nên dùng collection JSON tương thích và environment thử nghiệm. Giữ file mẫu không chứa secret, chốt phiên bản Newman, reporter và Node bằng lockfile của dự án. Cho mỗi lần chạy dữ liệu riêng hoặc có bước cleanup để bộ test không phụ thuộc lần trước.'],
       ['Phân biệt console và báo cáo máy đọc', 'CLI reporter in tóm tắt cho người chạy. JSON hoặc JUnit thuận tiện cho công cụ CI. Báo cáo HTML cần reporter tương ứng được cài cùng môi trường Node, ví dụ reporter cộng đồng htmlextra. Newman CLI sẵn có không tự hiểu tùy chọn của reporter chưa cài.'],
       ['Kết quả chạy phải tác động build', 'Cho assertion fail trả exit code khác 0 để gate CI nhận biết lỗi. Tránh suppress exit code nếu muốn chặn bản lỗi. Xuất report để chẩn đoán cả khi test fail, rà header, token và dữ liệu nhạy cảm trước khi chia sẻ.']
@@ -320,8 +323,11 @@
         snippet('npm.cmd install -D newman newman-reporter-htmlextra\nmkdir reports\nnpx.cmd newman run qa-starter.postman_collection.json -e qa-lab.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export reports/smoke.html'),
         'Thử đổi một expected để thấy CLI fail, process trả lỗi và report giúp tìm đúng request. Dùng giá trị thử, giữ secret trong môi trường chạy.'
       ]]
-    ], 'Chạy collection mẫu bằng CLI trước. Thêm environment và báo cáo HTML theo đề, chạy lại với một expected sai, rồi lưu lệnh, tên phép kiểm lỗi và báo cáo.', ['newman']),
+    ], 'Chạy collection mẫu bằng CLI trước. Thêm environment và báo cáo HTML theo đề, chạy lại với một expected sai, rồi lưu lệnh, tên phép kiểm lỗi và báo cáo.', ['newman', 'node']),
     QA5D4: lesson('§6.2, §2.2.1 · lợi ích, rủi ro và vị trí của UI automation', [
+      ['Đọc JavaScript từ số 0 trước khi tự động hóa', 'const đặt tên cho một giá trị hoặc đối tượng, ví dụ const amount = 10000;. Chuỗi nằm trong dấu nháy, ví dụ \'Đăng nhập\'. Một hàm nhóm các bước: phần trong { } là thân hàm. Dấu chấm gọi khả năng của đối tượng: page.getByLabel(...) tìm phần tử theo nhãn. Trong Playwright Test, test(tên, async ({ page }) => { ... }) khai báo một ca; page là trang do framework cấp. async cho phép dùng await để chờ thao tác bất đồng bộ hoàn tất. Đừng nhầm dấu = gán giá trị với so sánh ===.'],
+      ['Dự đoán trước khi chạy', "Ví dụ: const expected = 'Số dư tài khoản'; await expect(page.getByRole('heading', { name: expected })).toBeVisible();. Dòng đầu lưu tên heading cần tìm; dòng sau chờ heading có tên đó hiển thị. Nếu tên thực tế khác, assertion sẽ thất bại sau thời gian chờ. Tự đổi expected thành một tên khác và giải thích vì sao kết quả thay đổi."],
+      ['Chuẩn bị và chia phiên', 'Ở máy tính đã cài Node.js và npm, tạo thư mục lab riêng; cài Playwright Test theo hướng dẫn chính thức và cài browser mà Playwright yêu cầu. Chạy test mẫu trong lab, sau đó sửa một giá trị và chạy lại. Dành riêng một phiên để cài đặt nếu đây là lần đầu; không cần cài hoặc chạy code ngân hàng thật.'],
       ['Một test UI có thể lặp lại', 'Mỗi test chuẩn bị tài khoản giả lập và trạng thái ban đầu rõ. Dùng locator theo vai trò, nhãn người dùng thấy hoặc test ID đã thống nhất. Xác định assertion đầu ra như heading trang tài khoản, thêm kiểm API riêng nếu cần xác minh dữ liệu. Browser context riêng giảm rò trạng thái giữa test.'],
       ['Chờ trạng thái, tránh chờ số giây', 'Playwright tự chờ điều kiện thao tác của locator, còn web-first assertion sẽ thử lại đến khi đạt hoặc hết thời gian chờ. Dùng expect(locator).toBeVisible() cho nội dung xuất hiện sau request. Lệnh sleep cố định có thể vừa làm chậm bộ test vừa fail khi hệ thống lâu hơn dự tính.'],
       ['Quyết định nên tự động hóa ở đâu', 'UI hữu ích cho vài luồng kinh doanh xuyên màn hình, còn rule tính toán, quyền và validation thường kiểm nhanh hơn ở unit hoặc API. Chọn case có giá trị chạy lặp và dữ liệu kiểm soát được. Khi fail, đọc trace và request thay vì tăng timeout theo phản xạ.']
@@ -333,7 +339,7 @@
         snippet("test('đăng nhập đúng', async ({ page }) => {\n  await page.getByLabel('Tên đăng nhập').fill('qa-demo');\n  await page.getByLabel('Mật khẩu').fill('test-only-01');\n  await page.getByRole('button', { name: 'Đăng nhập' }).click();\n  await expect(page.getByRole('heading', { name: 'Số dư tài khoản' })).toBeVisible();\n});"),
         'Ca sai mật khẩu phải hiện thông báo và giữ màn đăng nhập. Khi kiểm một hệ thống có phiên thật, thêm kiểm tra phiên ở lớp phù hợp theo yêu cầu.'
       ]]
-    ], 'Thử tay Mini Banking Lab với đúng và sai mật khẩu. Viết một ca Playwright JavaScript cho đăng nhập thành công, chạy tệp spec, rồi thêm ca sai mật khẩu để kiểm cả thông báo và màn đang hiển thị.', ['playwright']),
+    ], 'Thử tay Mini Banking Lab với đúng và sai mật khẩu. Viết một ca Playwright JavaScript cho đăng nhập thành công, chạy tệp spec, rồi thêm ca sai mật khẩu để kiểm cả thông báo và màn đang hiển thị.', ['playwright', 'js', 'node']),
     QA5D5: lesson('§6.2, §5.4 · testware bảo trì được · mẫu Playwright POM bổ sung', [
       ['Tách kiến thức về giao diện khỏi ý định test', 'Page Object gom locator và hành động có nghĩa như mở trang, nhập người nhận và gửi lệnh. File spec giữ tiền điều kiện, dữ liệu, quy tắc mong đợi và assertion nghiệp vụ. Khi đổi nhãn nút, sửa locator một nơi. Khi đổi quy tắc hạn mức, sửa hoặc thêm test ở spec.'],
       ['Thiết kế API nhỏ cho Page Object', 'Class là mẫu mô tả dữ liệu và hành động của đối tượng. Khi gọi new TransferPage(page), constructor nhận page của bài test, còn method như submit() thao tác trên page đó. Tách fillTransfer(data) và submit() để test âm có thể kiểm riêng bước nhập hoặc bước gửi. Tạo Page Object cho từng test để dữ liệu không lẫn khi chạy song song.'],
@@ -450,3 +456,4 @@
     }
   }
 })();
+
