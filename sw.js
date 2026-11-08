@@ -1,14 +1,15 @@
 const PREFIX = 'code-master-academy:';
-const CACHE = PREFIX + 'v34';
+const CACHE = PREFIX + 'v35';
 const LEGACY = ["guided-audited-v23", "guided-release-v24", "guided-verified-v22", "learning-plus-v21", "qa-navigation-coherent-v26", "qa-navigation-fix-v25"];
 const ASSETS = [
   './', './index.html', './curriculum.js', './fde-curriculum.js',
-  './qa-curriculum.js', './qa-from-zero.js', './two-app-deep-labs.js', './study-style.css',
+  './qa-curriculum.js', './qa-from-zero.js?v=35', './two-app-deep-labs.js', './study-style.css',
   './fde.html', './projects.html', './manifest.webmanifest', './icon.svg',
   './verified-code-lessons.js', './worked-code-examples.js', './product-demo.html', './product-demo.js',
   './travel-atlas.js', './learning-plus.js?v=34', './learning-plus.css', './lab.html',
-  './lab-engine.js?v=32', './banking-qa-detail.js?v=29', './guided-flow.css?v=31', './guided-flow.js?v=34',
-  './qa-study-lessons.js?v=34', './code-study-lessons.js?v=31',
+  './lab-engine.js?v=32', './banking-qa-detail.js?v=29', './guided-flow.css?v=31', './guided-flow.js?v=35',
+  './daily-review.js?v=1',
+  './qa-study-lessons.js?v=35', './code-study-lessons.js?v=31',
   './study-upgrade.js?v=30',
   './qa-starter.html', './qa-starter.js?v=34', './qa-practice.html', './qa-practice.html?embedded=1', './qa-playwright.spec.js',
   './qa-transfer.json', './qa-starter.postman_collection.json',
@@ -55,3 +56,4 @@ self.addEventListener('fetch', event => {
     }
   })());
 });
+
