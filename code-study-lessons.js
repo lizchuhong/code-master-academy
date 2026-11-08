@@ -848,5 +848,34 @@
       if (videoByLesson[day.id]) section.sources.push(videoByLesson[day.id]);
     }
   }
+
+  // The original curriculum had generic video instructions without URLs.
+  // Point learners to an actual linked source where present; do not imply that
+  // a direct video exists for the remaining lessons.
+  for (const week of window.CURRICULUM.weeks) {
+    for (const day of week.days) {
+      const theory = day.sections.find(part =>
+        /^\d+\. Concept explanation$|^Lý thuyết có hệ thống$/.test(part.title));
+      const hasVideo = theory?.sources?.some(source =>
+        /https:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)/i.test(source?.[1] || ''));
+      for (const part of day.sections) {
+        if (/^FINANCE\/ECONOMICS MINI-TRACK/.test(part.title)) {
+          part.blocks.unshift({type:'Callout', text:'Phần mở rộng tùy chọn: ví dụ thị trường cổ phiếu không bắt buộc cho mục tiêu QA Automation và web du lịch. Hãy tập trung vào cách kiểm thử dữ liệu có thể áp dụng cho hệ thống đặt tour.'});
+          part.blocks.push({type:'Paragraph', text:'Liên hệ web du lịch: khi kiểm giá tour, hãy xác định loại giá, đơn vị tiền và thời điểm áp dụng theo yêu cầu; sau đó kiểm dữ liệu hợp lệ, giá trị thiếu và trường hợp sai đơn vị.'});
+        }
+        for (const block of part.blocks || []) {
+          if (/^VIDEO (?:search \(<15 phút\)|\(<15 phút, ưu tiên visual\)): Xem video trực tiếp$/.test(block.text || '')) {
+            block.text = hasVideo
+              ? 'Video bổ trợ và tài liệu chính thức nằm trong mục Nguồn tham khảo của phần Kiến thức và ví dụ áp dụng. Video có thể dài hơn 15 phút; hãy xem đoạn phù hợp được ghi trong link.'
+              : 'Chưa có video trực tiếp được bổ sung trong phần kiến thức chính của bài này. Hãy học nội dung trong app và mở Nguồn tham khảo để đọc tài liệu chính thức.';
+          } else if (block.text === 'Primary resource: Official docs / primary reference') {
+            block.text = 'Tài liệu chính thức: mở Nguồn tham khảo trong phần Kiến thức và ví dụ áp dụng.';
+          } else if (/^VIDEO DOMAIN \(<15 phút\): Xem video trực tiếp — /.test(block.text || '')) {
+            block.text = block.text.replace(/^VIDEO DOMAIN \(<15 phút\): Xem video trực tiếp — /, 'Giáo trình cũ có nêu video mở rộng sau, nhưng chưa kèm đường dẫn trực tiếp được xác minh: ');
+          }
+        }
+      }
+    }
+  }
 })();
 
