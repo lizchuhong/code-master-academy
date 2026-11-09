@@ -535,6 +535,19 @@ body[data-academy] .study-syllabus {
 }
 .study-article > h2 { margin: 0; font-size: clamp(1.27rem, 2.5vw, 1.7rem); letter-spacing: -.02em; }
 .study-stage-help { margin: 5px 0 13px; color: var(--muted-ink); }
+.study-definitions {
+  margin: 12px 0 16px;
+  padding: 12px clamp(10px, 2.5vw, 16px);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--tint);
+}
+.study-definitions h3 { margin: 0 0 4px; font-size: 1.05rem; }
+.study-definitions dl, .study-definitions dd { margin: 0; }
+.study-definitions dl > div { padding: 7px 0; overflow-wrap: anywhere; }
+.study-definitions dl > div + div { border-top: 1px solid var(--line); }
+.study-definitions dt { font-weight: 700; }
+.study-definitions dd { line-height: 1.5; }
 .qa-practice-unit {
   margin: 12px 0;
   padding: clamp(10px, 2vw, 16px);

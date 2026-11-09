@@ -4,6 +4,7 @@
 
   const ctfl = 'https://istqb.org/wp-content/uploads/2024/11/ISTQB_CTFL_Syllabus_v4.0.1.pdf';
   const sources = {
+    ctflTerms: ['ISTQB CTFL v4.0.1 · Error, defect, failure và root cause · §1.2.3, trang 17', ctfl + '#page=17'],
     sql: ['PostgreSQL · SQL tutorial', 'https://www.postgresql.org/docs/current/tutorial-sql.html'],
     http: ['IETF · RFC 9110 HTTP Semantics', 'https://www.rfc-editor.org/rfc/rfc9110.html'],
     postman: ['Postman · Write post-response scripts', 'https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-scripts/'],
@@ -36,16 +37,24 @@
   const lessons = {
     QA1D1: lesson('§1.1–1.3, §5.5 · FL-1.2.3, FL-5.5.1', [
       ['Testing, QA và debugging', 'Testing thu thập bằng chứng về chất lượng và rủi ro của sản phẩm. Có thể review đặc tả trước khi có build hoặc chạy chương trình với dữ liệu thử. QA hướng vào cải thiện quy trình để phòng lỗi. Khi một phép thử cho thấy failure, debugging tái hiện, chẩn đoán và xử lý nguyên nhân. Sau bản sửa, chạy confirmation test để xác nhận lỗi cũ đã được xử lý, rồi chọn regression test cho vùng có thể bị ảnh hưởng.'],
-      ['Error → defect → failure', 'Giả sử lập trình viên đọc nhầm ranh giới tối thiểu (error) và viết điều kiện chấp nhận số tiền bằng 0 (defect). Khi người thử nhập 0 và màn hình mở bước xác nhận, đó là failure quan sát được. Root cause có thể là quy tắc viết mơ hồ hoặc thiếu review, cần điều tra. Bug report ghi nhận bằng chứng và mức độ tái hiện trước khi nhóm kết luận nguyên nhân.'],
+      ['Khi nào defect gây failure?', 'Sai sót của con người có thể tạo defect. Defect trong mã có thể gây failure mỗi khi được thực thi hoặc chỉ với dữ liệu và điều kiện cụ thể. Môi trường chạy cũng có thể gây failure. Khi báo lỗi, ghi hành vi quan sát được và bằng chứng để nhóm điều tra nguyên nhân.'],
       ['Các nguyên tắc giúp ưu tiên kiểm thử', 'Test cho thấy lỗi có mặt và vẫn còn rủi ro sau khi test pass. Kiểm hết tổ hợp thường bất khả thi, nên test sớm và ưu tiên khu vực có nhiều lỗi hoặc rủi ro cao. Thay đổi dữ liệu khi bộ test cũ mất khả năng phát hiện lỗi mới. Cách test phụ thuộc bối cảnh, và sản phẩm ít defect vẫn có thể thất bại nếu giải quyết sai nhu cầu.'],
       ['Một báo cáo để người khác hành động', 'Nêu màn hình, điều kiện và hiện tượng ngay trong tiêu đề. Ghi môi trường, build, tiền điều kiện, dữ liệu, bước tái hiện, expected result gắn yêu cầu, actual result, tần suất và bằng chứng. Severity là mức tác động, priority là mức cần xử lý theo kế hoạch. Khi triage, nhóm xác nhận báo cáo, phân loại và quyết định xử lý. Dùng dữ liệu giả và che dữ liệu cá nhân trong bằng chứng.']
     ], [
-      ['Ví dụ · Số tiền bằng 0', 'Quy tắc TRF-01 của môi trường giả lập yêu cầu chặn giá trị 0 VND ở màn nhập tiền. Mở chuyển tiền, chọn tài khoản A và người nhận B hợp lệ, nhập 0 VND, bấm Tiếp tục. Expected là hiện lỗi dưới ô số tiền và giữ ở màn nhập. Actual là vào màn xác nhận. Tiêu đề phù hợp là “[Chuyển tiền][0 VND] Mở bước xác nhận khi số tiền không hợp lệ”.'],
+      ['Ví dụ · Số tiền bằng 0', [
+        'Quy tắc giả lập TRF-01 yêu cầu số tiền chuyển lớn hơn 0. Chọn tài khoản nguồn A và người nhận B hợp lệ.',
+        'Expected result là hệ thống báo lỗi và giữ ở màn nhập khi nhập 0 VND.',
+        { type: 'List Bullet', text: 'Error · Lập trình viên hiểu nhầm rằng số tiền bằng 0 được phép.' },
+        { type: 'List Bullet', text: 'Defect / Bug · Điều kiện kiểm tra trong mã là amount >= 0, nên chấp nhận cả giá trị 0.' },
+        { type: 'List Bullet', text: 'Failure · Khi QA nhập 0 VND và bấm Tiếp tục, hệ thống mở bước xác nhận.' },
+        'Tiêu đề báo lỗi phù hợp là “[Chuyển tiền][0 VND] Mở bước xác nhận khi số tiền không hợp lệ”.'
+      ]],
       ['Chọn đúng bằng chứng', 'Một video ngắn chứng minh lỗi điều hướng. Chỉ kết luận hệ thống tạo hoặc ghi sổ giao dịch khi có mã giao dịch hoặc bằng chứng từ lớp tương ứng. Khi thử lại bản sửa, dùng đúng 0 VND để confirmation, rồi kiểm tra một số tiền hợp lệ để regression.']
     ], [
       ['Mẫu báo cáo cho đề eKYC', 'Tiêu đề “[eKYC][Mật khẩu 123456] Màn hình Đăng ký loading và không hiện lỗi mật khẩu”. Tiền điều kiện là đã đến bước tạo mật khẩu trên web thử nghiệm. Bước 1 nhập 123456. Bước 2 bấm Đăng ký. Expected là báo lỗi dưới ô theo yêu cầu tối thiểu 8 ký tự và các nhóm ký tự. Actual là không thấy lỗi và màn hình loading.'],
-      ['Tự kiểm tra', 'Môi trường đã biết là web Mobile Banking giả lập. Build, trình duyệt, thời gian loading và tần suất tái hiện chưa được cho. Đính kèm video có dữ liệu thử và xác minh lại trên build đã xác định. Đề bài chưa có bằng chứng tài khoản được tạo.']
-    ]),
+      ['Tự kiểm tra', 'Môi trường đã biết là web Mobile Banking giả lập. Build, trình duyệt, thời gian loading và tần suất tái hiện chưa được cho. Đính kèm video có dữ liệu thử và xác minh lại trên build đã xác định. Đề bài chưa có bằng chứng tài khoản được tạo.'],
+      ['Nhận diện thuật ngữ', 'Màn hình loading thay vì báo lỗi là failure bạn quan sát được. Defect cần được xác định bằng bằng chứng ở đặc tả, mã hoặc sản phẩm công việc liên quan.']
+    ], undefined, ['ctflTerms']),
     QA1D2: lesson('§1.4, §4.5.2–4.5.3 · FL-1.4.1, FL-1.4.4, FL-4.5.2', [
       ['Từ yêu cầu đến test case', 'Test basis là nơi lấy quy tắc, ví dụ acceptance criteria. Test analysis xác định điều kiện cần kiểm tra như “tài khoản bị khóa”. Test design chọn dữ liệu và expected result. Test implementation chuẩn bị tài khoản, quy trình chạy và bộ test. Test execution ghi actual result rồi so với expected. Planning, monitoring/control và completion quản lý công việc xuyên suốt.'],
       ['Một case đủ để chạy lại', 'Đặt ID, liên kết quy tắc, ghi trạng thái tài khoản, input cụ thể, bước thao tác và kết quả thấy được. Expected phải quan sát được ở UI, response hoặc trạng thái ứng dụng phù hợp với yêu cầu. Actual và Pass/Fail ghi sau khi chạy. SMART là cách ghi mục tiêu rõ và đo được trong bài này. Traceability giúp biết một yêu cầu có case nào, kết quả nào và defect nào liên quan.'],

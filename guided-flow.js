@@ -456,6 +456,23 @@
     return box;
   }
 
+  function definitionPanel(entries) {
+    const box = element('section', 'study-definitions');
+    const title = element('h3', '', 'Định nghĩa ngắn');
+    const list = element('dl');
+    for (const [name, meaning] of entries) {
+      const row = element('div');
+      const term = element('dt');
+      const description = element('dd');
+      term.textContent = name;
+      description.textContent = meaning;
+      row.append(term, description);
+      list.append(row);
+    }
+    box.append(title, list);
+    return box;
+  }
+
   function lessonPart(item, index, stage, first) {
     const value = item.sections[index];
     const answer = isAnswer(item, index, stage);
@@ -713,6 +730,8 @@
       '<h2 tabindex="-1">' + (stages[stage]?.title ?? 'Tài liệu bổ sung') + '</h2>');
     const hasPractice = window.QAStarter?.hasPractice(item.id);
     if (stage === 0) {
+      const entries = window.CodeDefinitions?.[item.id];
+      if (entries?.length) article.append(definitionPanel(entries));
       const prerequisites = prerequisitePanel(item);
       if (prerequisites) article.append(prerequisites);
     }
